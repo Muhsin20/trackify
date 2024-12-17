@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  nextjs-app:
+    container_name: trackifyapp
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Map port 3000 of the container to your local machine
+    volumes:
+      - .:/app # Sync your local code with the container
+      - /app/node_modules # Prevent overwriting node_modules inside the container
+    command: ["npm", "run", "dev"]
