@@ -1,13 +1,11 @@
 "use client";
-import { useEffect } from "react";
-import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
-import { useRouter } from "next/navigation";
+import Navbar from "../components/Navbar";
 import TopBar from "../components/TopBar";
 import Grid from "../components/Grid";
-// import { useState } from "react";
-export default function Dashboard() {
-  // const [user, setUser] = useState();
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+export default function JobApplication() {
   useEffect(() => {
     async function authUser() {
       const request = await fetch("/api/auth/validate", {
@@ -34,16 +32,16 @@ export default function Dashboard() {
   const handleButtonClick = () => {
     router.push("/"); // Redirect to the login page (page.tsx is typically at the root level)
   };
-
   return (
     <>
-      <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
-        <Sidebar />
-        <div className="bg-white rounded-lg pb-4 shadow h-[200vh]">
-          <TopBar />
-          <Grid />
-        </div>
-      </main>
+      <div>
+        <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
+          <Sidebar />
+          <div className="bg-white rounded-lg pb-4 shadow h-[200vh]">
+            <TopBar />
+          </div>
+        </main>
+      </div>
     </>
   );
 }
