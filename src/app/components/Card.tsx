@@ -1,3 +1,5 @@
+"use client";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -84,47 +86,54 @@ export default function Card({ title, title2, subtitle }: CardProps) {
 
           {/* Input fields */}
           <div className="space-y-4">
-            {/* Username Field */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Enter Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Email"
-                onChange={handleForm}
-                value={formData.email}
-                className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-            </div>
+            <form onSubmit={handleLogin}>
+              {/* Username Field */}
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Enter Email
+                </label>
+                <input
+                  type="email"
+                  data-testid="email"
+                  id="email"
+                  name="email"
+                  placeholder="Email"
+                  onChange={handleForm}
+                  value={formData.email}
+                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
 
-            {/* Password Field */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Enter Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Password"
-                onChange={handleForm}
-                value={formData.password}
-                className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-            </div>
-          </div>
+              {/* Password Field */}
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Enter Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  data-testid="password"
+                  name="password"
+                  placeholder="Password"
+                  onChange={handleForm}
+                  value={formData.password}
+                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
 
-          {/* Buttons */}
-          <div className="flex flex-col space-y-3 mt-6">
-            <button
-              onClick={handleLogin}
-              className="w-full py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition duration-300"
-            >
-              Continue
-            </button>
+              {/* Submit Button */}
+              <div className="flex flex-col space-y-3 mt-6">
+                <button
+                  type="submit"
+                  data-testid="submit-button"
+                  className="w-full py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition duration-300"
+                >
+                  Continue
+                </button>
+              </div>
+            </form>
+
+            {/* Sign-up Button (outside of the form) */}
             <button
               onClick={goToSignUp}
               className="w-full py-3 bg-gray-100 text-blue-500 border border-blue-500 rounded-lg font-semibold hover:bg-blue-500 hover:text-white transition duration-300"
