@@ -1,6 +1,7 @@
 import React from "react";
 import { fireEvent, render, cleanup, screen } from "@testing-library/react";
 import Card from "@/app/components/Card";
+import "jest-fetch-mock";
 import { useRouter } from "next/router";
 import { get } from "https";
 
@@ -24,7 +25,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  window.alert.mockRestore(); // Restore `alert` after each test
+  (window.alert as jest.Mock).mockRestore(); // Restore `alert` after each test
 });
 
 //it hold name of test and function holding test

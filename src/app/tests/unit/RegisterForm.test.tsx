@@ -3,6 +3,7 @@ import { fireEvent, render, cleanup, screen } from "@testing-library/react";
 import Register from "@/app/register/page";
 import { useRouter } from "next/router";
 import { get } from "https";
+import "jest-fetch-mock";
 
 // Mock the `useRouter` function because it cant be used outside  the context of approuter
 jest.mock("next/navigation", () => ({
@@ -25,7 +26,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  window.alert.mockRestore(); // Restore `alert` after each test
+  (window.alert as jest.Mock).mockRestore(); // Restore `alert` after each test
 });
 
 //test that empty email fails form submission
