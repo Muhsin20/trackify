@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,10 @@ import Grid from "../components/Grid";
 // import { useState } from "react";
 export default function Dashboard() {
   // const [user, setUser] = useState();
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [id, setID] = useState();
+  const router = useRouter(); // Initialize the router
   useEffect(() => {
     async function authUser() {
       const request = await fetch("/api/auth/validate", {
@@ -25,22 +29,20 @@ export default function Dashboard() {
         const result = await request.json();
         console.log(result.message);
         console.log(result.user);
+        setID(result.user.id);
+        setEmail(result.user.email);
+        setUsername(result.user.username);
       }
     }
     authUser();
   }, []);
 
-  const router = useRouter(); // Initialize the router
-  const handleButtonClick = () => {
-    router.push("/"); // Redirect to the login page (page.tsx is typically at the root level)
-  };
-
   return (
     <>
       <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
-        <Sidebar />
+        <Sidebar username={username} email={email} />
         <div className="bg-white rounded-lg pb-4 shadow h-[200vh]">
-          <TopBar />
+          <TopBar username={username} email={email} />
           <Grid />
         </div>
       </main>

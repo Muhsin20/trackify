@@ -3,6 +3,7 @@ import Card from "../components/Card";
 import Navbar from "../components/Navbar";
 
 export default function Login() {
+  //make a google login sso
   return (
     <>
       <div className="h-screen bg-gradient-to-br from-purple-800 via-blue-900 to-gray-900 text-black">

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { FiEye } from "react-icons/fi";
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
-
+import dynamic from "next/dynamic";
 const ApplicationsDonutChart = () => {
   const [activeIndex, setActiveIndex] = useState(-1);
 
@@ -51,4 +51,6 @@ const ApplicationsDonutChart = () => {
   );
 };
 
-export default ApplicationsDonutChart;
+export default dynamic(() => Promise.resolve(ApplicationsDonutChart), {
+  ssr: false, // Disable SSR
+});

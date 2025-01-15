@@ -1,3 +1,4 @@
+"use client";
 import ActivityGraph from "./ActivityGraph";
 import ApplicationsDonutChart from "./ApplicationsDonutChart";
 import StatCards from "./StatCards";

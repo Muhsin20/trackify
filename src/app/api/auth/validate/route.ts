@@ -1,12 +1,22 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import redisClient from "@/app/lib/redisClient";
+import dynamoDb from "@/app/lib/dynamoClient";
+import { PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { v4 as uuidv4 } from "uuid";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { NextResponse } from "next/server";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 export async function GET() {
   //get the cookie and the uuid from the cookie
   const cookieStore = await cookies();
   const token = cookieStore.get("auth-token")?.value;
   if (!token) {
-    return new Response("no cookie", { status: 400 });
+    return new Response(JSON.stringify({ error: "No cookie found" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   } else {
     // Fetch the JWT from Redis
     const redisKey = token;
@@ -20,16 +30,50 @@ export async function GET() {
       const secret_key = process.env.JWT_SECRET || "empty";
       const parsed_token = JSON.parse(storedToken);
       try {
-        const verifiedToken = jwt.verify(parsed_token.token, secret_key);
+        const verifiedToken = jwt.verify(
+          parsed_token.token,
+          secret_key
+        ) as jwt.JwtPayload;
         if (verifiedToken) {
-          return new Response(
-            JSON.stringify({ message: "Authenticated", user: verifiedToken }),
-            { status: 200 }
-          );
+          const params = {
+            TableName: process.env.DYNAMODB_TABLE_NAME, // The DynamoDB table name
+            KeyConditionExpression: "id = :id", // Query by the partition key "id"
+            ExpressionAttributeValues: {
+              ":id": verifiedToken.id, // Replace "userId" with the actual value you're querying for
+            },
+          };
+
+          // return res.status(200).json({ message: "Login successful" });
+
+          //get the response from the db and if its in the db create a session and send a success response else reject
+          const command = new QueryCommand(params);
+          const response = await dynamoDb.send(command);
+          if (response.Items && response.Items.length > 0) {
+            const user = response.Items[0];
+            const email = user.email;
+            const username = user.username;
+            const userObj = {
+              email: email,
+              username: username,
+              id: verifiedToken.id,
+            };
+            return new Response(
+              JSON.stringify({ message: "Authenticated", user: userObj }),
+              { status: 200 }
+            );
+          }
+        } else {
+          return new Response(JSON.stringify({ error: "Server Error" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
         }
       } catch (e) {
         console.log(e);
-        return new Response("Unauthorized", { status: 500 });
+        return new Response(JSON.stringify({ error: "Server Error" }), {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        });
       }
     }
   }

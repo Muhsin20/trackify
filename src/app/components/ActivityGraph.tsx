@@ -34,34 +34,38 @@ const ActivityGraph: React.FC = () => {
           </h3>
         </div>
         <div className="h-64 px-4">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={applicationsData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                tick={{ fontSize: 12 }}
-                dataKey="month"
-                padding={{ left: 20, right: 20 }}
-              />
-              <YAxis
-                label={{
-                  value: "Applications",
-                  angle: -90,
-                  position: "insideLeft",
-                }}
-              />
-              <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="applications"
-                stroke="#8884d8"
-                strokeWidth={2}
-                dot={{ r: 5 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          {applicationsData.length > 0 ? (
+            <ResponsiveContainer width="99%" height="100%">
+              <LineChart
+                data={applicationsData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  tick={{ fontSize: 12 }}
+                  dataKey="month"
+                  padding={{ left: 20, right: 20 }}
+                />
+                <YAxis
+                  label={{
+                    value: "Applications",
+                    angle: -90,
+                    position: "insideLeft",
+                  }}
+                />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="applications"
+                  stroke="#8884d8"
+                  strokeWidth={2}
+                  dot={{ r: 5 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <p>No activity data available.</p>
+          )}
         </div>
       </div>
     </>
