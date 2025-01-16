@@ -1,14 +1,9 @@
-import dynamoDb from "../../lib/dynamoClient";
-import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
-import { NextResponse } from "next/server";
 import redisClient from "../../lib/redisClient";
-import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
 
 //route to handle login
-export async function POST(request: Request) {
+export async function POST() {
   //get the cookie and the uuid from the cookie
   const cookieStore = await cookies();
   const token = cookieStore.get("auth-token")?.value;

@@ -1,4 +1,3 @@
-import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 const StatCards: React.FC<{ stats: Record<string, any> }> = ({ stats }) => {
   return (
     <>
@@ -6,21 +5,18 @@ const StatCards: React.FC<{ stats: Record<string, any> }> = ({ stats }) => {
         title="Number of Applications"
         value={stats["application length"]?.count || 0}
         pillText="2.75%"
-        trend="up"
         period="From Jan 1st - Jul 31st"
       />
       <Card
         title="Number of Interviews"
         value={stats["Interview Scheduled"]?.count || 0}
         pillText="1.01%"
-        trend="down"
         period="From Jan 1st - Jul 31st"
       />
       <Card
         title="Number of Offers"
         value={stats["Offer Received"]?.count || 0}
         pillText="60.75%"
-        trend="up"
         period="Previous 365 days"
       />
     </>
@@ -30,14 +26,11 @@ export default StatCards;
 const Card = ({
   title,
   value,
-  pillText,
-  trend,
   period,
 }: {
   title: string;
   value: string;
   pillText: string;
-  trend: "up" | "down";
   period: string;
 }) => {
   return (

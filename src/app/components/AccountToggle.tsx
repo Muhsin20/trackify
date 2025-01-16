@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 interface UserProps {
   username: string;

@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { useRouter } from "next/navigation";
 import TopBar from "../components/TopBar";
@@ -53,13 +52,15 @@ export default function Dashboard() {
 
     fetchApplicationsByStatus();
   }, []);
-
+  if (id) {
+    console.log("");
+  }
   return (
     <>
       <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
         <Sidebar username={username} email={email} />
         <div className="bg-white rounded-lg pb-4 shadow h-[200vh]">
-          <TopBar username={username} email={email} />
+          <TopBar username={username} />
           <Grid stats={applicationsByStatus} />
         </div>
       </main>

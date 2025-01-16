@@ -1,11 +1,12 @@
 "use client";
+/* eslint-disable no-unused-vars */
+
 import Sidebar from "../components/Sidebar";
-import TopBar from "../components/TopBar";
-import JobApplication from "../components/JobApplication";
-import { ToastContainer, toast } from "react-toastify";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 export default function Profile() {
+  //when creating edit profile picture or resume try to write in aws lambda
+
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -34,6 +35,9 @@ export default function Profile() {
     }
     authUser();
   }, []);
+  if (id) {
+    console.log("");
+  }
   return (
     <>
       <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
@@ -46,12 +50,12 @@ export default function Profile() {
             </h1>
           </div>
           <p className="text-center text-black">
-            Hi there! 👋 We're excited to let you know that the Profile Page is
-            currently being built! 🎉 Soon, you’ll be able to view and update
-            your details, including your username, email, and resume. Stay
-            tuned—we’re working hard to bring you a smoother, more personalized
-            experience. Thank you for your patience and support! 🙌 If you have
-            any questions or feedback, feel free to reach out!
+            Hi there! 👋 We&apos;re excited to let you know that the Profile
+            Page is currently being built! 🎉 Soon, you&apos;ll be able to view
+            and update your details, including your username, email, and resume.
+            Stay tuned—we&apos;re working hard to bring you a smoother, more
+            personalized experience. Thank you for your patience and support! 🙌
+            If you have any questions or feedback, feel free to reach out!
           </p>
         </div>
       </main>

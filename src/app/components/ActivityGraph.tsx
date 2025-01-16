@@ -7,7 +7,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 const ActivityGraph: React.FC<{ stats: Record<string, any> }> = ({ stats }) => {

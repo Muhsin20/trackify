@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
+
 import React from "react";
-import { fireEvent, render, cleanup, screen } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import Register from "@/app/register/page";
-import { useRouter } from "next/router";
-import { get } from "https";
+
 import "jest-fetch-mock";
 
 // Mock the `useRouter` function because it cant be used outside  the context of approuter
@@ -210,7 +211,7 @@ it("Register Test Email already in use", async () => {
 //test that empty username fails form submission
 it("Register Test User registered", async () => {
   //render is used to render given component
-  let num = Math.floor(Math.random() * 1000001);
+  const num = Math.floor(Math.random() * 1000001);
   const { getByTestId } = render(<Register />);
   //   const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => {});
   //create an alert mock (mock is fake or simulated version of something like browser alert, router, etc.)

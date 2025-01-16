@@ -1,8 +1,7 @@
 interface UserProps {
   username: string;
-  email: string;
 }
-const TopBar: React.FC<UserProps> = ({ username, email }) => {
+const TopBar: React.FC<UserProps> = ({ username }) => {
   const today = new Date(); // Get the current date
   const formattedDate = today.toLocaleDateString("en-US", {
     weekday: "long",

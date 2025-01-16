@@ -1,13 +1,11 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import redisClient from "@/app/lib/redisClient";
-import { PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
-import { v4 as uuidv4 } from "uuid";
-import { DynamoDBClient, Select } from "@aws-sdk/client-dynamodb";
-import { NextResponse, NextRequest } from "next/server";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { Select } from "@aws-sdk/client-dynamodb";
+import { NextResponse } from "next/server";
 import dynamoDb from "../../lib/dynamoClient";
+/* eslint-disable no-unused-vars */
 
 const getApplicationsByStatus = async (userId: string, status: string) => {
   const params = {
@@ -60,7 +58,7 @@ const getApplicationsByYear = async (userId: string, year: number) => {
   return applicationsData;
 };
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth-token")?.value;
   if (!token) {

@@ -1,12 +1,9 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import redisClient from "@/app/lib/redisClient";
-import { PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
-import { QueryCommand } from "@aws-sdk/lib-dynamodb";
-import { v4 as uuidv4 } from "uuid";
-import { DynamoDBClient, Select } from "@aws-sdk/client-dynamodb";
+import { QueryCommand, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
+import { Select } from "@aws-sdk/client-dynamodb";
 import { NextResponse, NextRequest } from "next/server";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import dynamoDb from "../../lib/dynamoClient";
 
 export async function GET(request: NextRequest) {
@@ -62,12 +59,12 @@ export async function GET(request: NextRequest) {
 
   // Loop to reach the correct page
   while (pageIndex < currPage) {
-    const command: any = new QueryCommand({
+    const command: QueryCommand = new QueryCommand({
       ...params,
       ExclusiveStartKey: lastEvaluatedKey || undefined,
     });
 
-    const response: any = await dynamoDb.send(command);
+    const response: QueryCommandOutput = await dynamoDb.send(command);
 
     if (!response.LastEvaluatedKey && pageIndex < Number(currPage)) {
       break; // Break out of loop but don’t return empty data unless needed

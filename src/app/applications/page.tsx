@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 
 import Sidebar from "../components/Sidebar";
 import TopBar from "../components/TopBar";
@@ -16,16 +16,16 @@ interface Application {
   status: string;
 }
 
-const mockApplications: Application[] = Array.from({ length: 50 }, (_, i) => ({
-  application_id: i + 1,
-  title: `Job Title ${i + 1}`,
-  description: `This is the job description for Job Title ${i + 1}.`,
-  status: i % 5 === 0 ? "Applied" : "Pending",
-  url: `https://company${i + 1}.com/careers`,
-  company: `Company ${i + 1}`,
-}));
-
 export default function JobApplicationPage() {
+  return (
+    <>
+      <Suspense fallback={<p>Loading...</p>}>
+        <ApplicationComponent />
+      </Suspense>
+    </>
+  );
+}
+const ApplicationComponent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -53,7 +53,6 @@ export default function JobApplicationPage() {
     authUser();
   }, []);
 
-  const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const [isMounted, setIsMounted] = useState(false);
 
   const currentPageFromURL = parseInt(searchParams.get("page") || "1", 10);
@@ -149,10 +148,6 @@ export default function JobApplicationPage() {
     setViewApplication(null); // Close View Application Modal
   };
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    localStorage.setItem("currentPage", newPage.toString()); // Save the current page to localStorage
-  };
   const handleSaveApplication = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -248,7 +243,7 @@ export default function JobApplicationPage() {
       <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
         <Sidebar username={username} email={email} />
         <div className="bg-gray-50 rounded-lg pb-4 shadow h-full">
-          <TopBar username={username} email={email} />
+          <TopBar username={username} />
           <div className="p-8">
             {/* Title and Add Button */}
             <div className="flex justify-between items-center mb-6">
@@ -493,4 +488,4 @@ export default function JobApplicationPage() {
       </main>
     </div>
   );
-}
+};

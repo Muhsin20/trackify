@@ -2,12 +2,8 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import redisClient from "@/app/lib/redisClient";
 import dynamoDb from "@/app/lib/dynamoClient";
-import { PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
-import { v4 as uuidv4 } from "uuid";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { NextResponse } from "next/server";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+
 export async function GET() {
   //get the cookie and the uuid from the cookie
   const cookieStore = await cookies();

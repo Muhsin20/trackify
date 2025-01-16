@@ -1,9 +1,9 @@
+/* eslint-disable no-unused-vars */
+
 import React from "react";
-import { fireEvent, render, cleanup, screen } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import Card from "@/app/components/Card";
 import "jest-fetch-mock";
-import { useRouter } from "next/router";
-import { get } from "https";
 
 // Mock the `useRouter` function because it cant be used outside  the context of approuter
 jest.mock("next/navigation", () => ({
