@@ -19,6 +19,7 @@
     "@aws-sdk/lib-dynamodb": "^3.714.0",
     "@types/uuid": "^10.0.0",
     "@types/yup": "^0.29.14",
+    "@vercel/speed-insights": "^1.1.0",
     "aws-sdk": "^2.1692.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
