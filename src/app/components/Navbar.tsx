@@ -50,7 +50,7 @@ export default function Navbar({ transparent = true }: NavbarProps) {
           onClick={navigateToAboutMe}
         >
           <Image
-            src="/images/logoimg.png"
+            src="/images/trackify-cloud-logo.png"
             alt="Trackify Logo"
             width={40}
             height={40}

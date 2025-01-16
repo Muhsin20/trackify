@@ -3,14 +3,16 @@ import React, { useState } from "react";
 import { FiEye } from "react-icons/fi";
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 import dynamic from "next/dynamic";
-const ApplicationsDonutChart = () => {
+const ApplicationsDonutChart: React.FC<{ stats: Record<string, any> }> = ({
+  stats,
+}) => {
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const data = [
-    { name: "Applications", value: 40 },
-    { name: "Interviews", value: 15 },
-    { name: "Offers", value: 3 },
-    { name: "Rejections", value: 22 },
+    { name: "Applications", value: stats["application length"]?.count || 0 },
+    { name: "Interviews", value: stats["Interview Scheduled"]?.count || 0 },
+    { name: "Offers", value: stats["Offer Received"]?.count || 0 },
+    { name: "Rejections", value: stats["Rejected Applications"]?.count || 0 },
   ];
 
   const COLORS = ["#6366F1", "#3B82F6", "#10B981", "#EF4444"];

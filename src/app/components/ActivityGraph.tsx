@@ -10,7 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-const ActivityGraph: React.FC = () => {
+const ActivityGraph: React.FC<{ stats: Record<string, any> }> = ({ stats }) => {
   const applicationsData = [
     { month: "January", applications: 5 },
     { month: "February", applications: 8 },
@@ -37,7 +37,7 @@ const ActivityGraph: React.FC = () => {
           {applicationsData.length > 0 ? (
             <ResponsiveContainer width="99%" height="100%">
               <LineChart
-                data={applicationsData}
+                data={stats["Month Counts"]?.data}
                 margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />

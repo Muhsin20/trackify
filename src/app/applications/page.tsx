@@ -90,47 +90,6 @@ export default function JobApplicationPage() {
     }
   }, [currentPage, isMounted]);
 
-  // //function to get all the job applications for the user
-  // useEffect(() => {
-  //   async function getApplicationsForPage() {
-  //     console.log(`Fetching data for page: ${currentPage}`);
-
-  //     const request = await fetch(`/api/get-applications?page=${currentPage}`, {
-  //       method: "GET",
-  //       credentials: "include",
-  //     });
-
-  //     const result = await request.json();
-  //     if (request.status === 200) {
-  //       console.log(`Page ${currentPage} applications:`, result.applications);
-  //       setApplications(result.applications || []);
-  //       setJobLength(result.applications_length || 0);
-  //       localStorage.setItem("currentPage", currentPage.toString()); // Save current page
-  //     } else {
-  //       console.error("Error fetching applications:", result.message);
-  //     }
-  //   }
-
-  //   getApplicationsForPage();
-  // }, [currentPage]);
-
-  // useEffect(() => {
-  //   async function getApplicationsForPage() {
-  //     const request = await fetch(`/api/get-applications?page=${currentPage}`, {
-  //       method: "GET",
-  //       credentials: "include",
-  //     });
-
-  //     const result = await request.json();
-  //     if (request.status === 200) {
-  //       setApplications(result.applications || []);
-  //       setJobLength(result.applications_length || 0);
-  //     }
-  //   }
-
-  //   getApplicationsForPage();
-  // }, [currentPage]);
-
   const [applications, setApplications] = useState<Application[]>([]);
   const [userID, setUserID] = useState();
   const [jobLength, setJobLength] = useState(0);

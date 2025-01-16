@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [id, setID] = useState();
+  const [applicationsByStatus, setApplicationsByStatus] = useState([]);
   const router = useRouter(); // Initialize the router
   useEffect(() => {
     async function authUser() {
@@ -37,13 +38,29 @@ export default function Dashboard() {
     authUser();
   }, []);
 
+  useEffect(() => {
+    const fetchApplicationsByStatus = async () => {
+      const response = await fetch("/api/get-dashboard-data", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setApplicationsByStatus(data.applications);
+      }
+    };
+
+    fetchApplicationsByStatus();
+  }, []);
+
   return (
     <>
       <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
         <Sidebar username={username} email={email} />
         <div className="bg-white rounded-lg pb-4 shadow h-[200vh]">
           <TopBar username={username} email={email} />
-          <Grid />
+          <Grid stats={applicationsByStatus} />
         </div>
       </main>
     </>

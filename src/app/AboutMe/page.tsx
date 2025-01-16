@@ -63,7 +63,7 @@ export default function AboutMe() {
           {/* Feature 1 */}
           <div className="flex flex-col items-center text-center p-8 bg-white shadow-lg rounded-lg hover:shadow-2xl transition-shadow">
             <Image
-              src="/images/logoimg.png"
+              src="/images/trackify-logo.png"
               alt="Analytics"
               width={100}
               height={100}
@@ -81,7 +81,7 @@ export default function AboutMe() {
           {/* Feature 2 */}
           <div className="flex flex-col items-center text-center p-8 bg-white shadow-lg rounded-lg hover:shadow-2xl transition-shadow">
             <Image
-              src="/images/logoimg.png"
+              src="/images/trackify-logo.png"
               alt="Tools"
               width={100}
               height={100}
@@ -99,7 +99,7 @@ export default function AboutMe() {
           {/* Feature 3 */}
           <div className="flex flex-col items-center text-center p-8 bg-white shadow-lg rounded-lg hover:shadow-2xl transition-shadow">
             <Image
-              src="/images/icon-goals.png"
+              src="/images/trackify-logo.png"
               alt="Goals"
               width={100}
               height={100}
