@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
-
+import { v4 as uuidv4 } from "uuid";
 import Sidebar from "../components/Sidebar";
 import TopBar from "../components/TopBar";
 import JobApplication from "../components/JobApplication";
@@ -148,6 +148,7 @@ const ApplicationComponent = () => {
     setViewApplication(null); // Close View Application Modal
   };
 
+  let tempIdCounter = 0;
   const handleSaveApplication = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -177,10 +178,10 @@ const ApplicationComponent = () => {
       },
       body: JSON.stringify({
         user_id: userID,
-        title: newApplication.title,
-        company: newApplication.company,
-        url: newApplication.url,
-        description: newApplication.description,
+        title: newApplication.title.trim(),
+        company: newApplication.company.trim(),
+        url: newApplication.url.trim(),
+        description: newApplication.description.trim(),
         status: newApplication.status,
       }),
     });
@@ -194,6 +195,15 @@ const ApplicationComponent = () => {
         position: "top-center",
         autoClose: 5000,
       });
+      const tempId = --tempIdCounter;
+      const applicationWithId: Application = {
+        ...newApplication,
+        application_id: tempId,
+      };
+      setApplications((prevApplications) => [
+        ...prevApplications,
+        applicationWithId,
+      ]);
     } else {
       console.log("error");
       alert(data.message);
@@ -228,6 +238,11 @@ const ApplicationComponent = () => {
           position: "top-center",
           autoClose: 5000,
         });
+        setApplications((prev) =>
+          prev.map((app) =>
+            app.application_id === id ? { ...app, status: newStatus } : app
+          )
+        );
       } else {
         console.log("error");
         alert(data.message);

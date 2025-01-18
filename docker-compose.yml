@@ -11,14 +11,5 @@ services:
       - .:/app # Sync your local code with the container
       - /app/node_modules # Prevent overwriting node_modules inside the container
     command: ["npm", "run", "dev"] # Start the Next.js app in development mode
-    environment:
-      - REDIS_URL=redis://redis:6379
-      - NODE_ENV=development
-    depends_on:
-      - redis # Ensure Redis starts before your app
-
-  redis:
-    container_name: redis
-    image: redis:latest # Use the official Redis image
-    ports:
-      - "6379:6379" # Expose Redis on port 6379
+    env_file:
+      - .env # Load environment variables from the .env file
