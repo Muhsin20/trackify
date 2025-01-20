@@ -11,7 +11,7 @@ export default function Profile() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
-  const [profileImage, setProfileImage] = useState(null); // State for profile image
+  const [profileImage, setProfileImage] = useState(""); // State for profile image
 
   // Fetch user data
   useEffect(() => {
@@ -37,11 +37,12 @@ export default function Profile() {
   }, [router]);
 
   // Handle image upload future call to databse - muhsins part
-  const handleImageUpload = (event: any) => {
-    const file = event.target.files[0];
-    if (file) {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files; // Get the FileList from the input
+    if (files && files.length > 0) {
+      const file = files[0]; // Get the first file
       const imageUrl = URL.createObjectURL(file); // Create a temporary URL for the image
-      setProfileImage(imageUrl);
+      setProfileImage(imageUrl); // Set the state with the image URL
     }
   };
 
