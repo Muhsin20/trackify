@@ -37,14 +37,36 @@ export default function Profile() {
   }, [router]);
 
   // Handle image upload future call to databse - muhsins part
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadProfilePicture = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files; // Get the FileList from the input
     if (files && files.length > 0) {
       const file = files[0]; // Get the first file
+
       const imageUrl = URL.createObjectURL(file); // Create a temporary URL for the image
-      setProfileImage(imageUrl); // Set the state with the image URL
+      // setProfileImage(imageUrl); // Set the state with the image URL
     }
   };
+
+  useEffect(() => {
+    async function fetchProfilePicture() {
+      const request = await fetch("/api/get-profile-picture", {
+        method: "GET",
+        credentials: "include",
+      });
+      if (
+        request.status === 500 ||
+        request.status === 401 ||
+        request.status === 400 ||
+        request.status === 404
+      ) {
+        alert("Server Error");
+      } else {
+        const result = await request.json();
+        setProfileImage(result.message);
+      }
+    }
+    fetchProfilePicture();
+  }, []);
 
   // Display loading indicator while fetching data
   if (loading) {
@@ -111,7 +133,7 @@ export default function Profile() {
                 type="file"
                 accept="image/*"
                 className="hidden"
-                onChange={handleImageUpload}
+                onChange={uploadProfilePicture}
               />
             </div>
 

@@ -3,6 +3,8 @@ import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { ReturnValue } from "@aws-sdk/client-dynamodb";
+import { fileTypeFromBuffer } from "file-type";
+import sharp from "sharp";
 import { v4 as uuidv4 } from "uuid";
 // /pages/api/hash.js
 import crypto from "crypto";
@@ -16,40 +18,49 @@ const s3RandomImgName = (bytes = 32) =>
 //function to upload file to s3
 async function uploadFileToS3(file: Buffer, name: string, user_id: string) {
   const fileBuffer = file;
-  const mimeType = "application/pdf";
-  console.log(name);
+  const result = await fileTypeFromBuffer(fileBuffer);
+
+  if (
+    !result ||
+    ![
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/bmp",
+      "image/tiff",
+    ].includes(result.mime)
+  ) {
+    return false; // Invalid file type
+  }
+
+  const resizedImage = await sharp(fileBuffer)
+    .resize(200, 200, { fit: "cover", position: "center" })
+    .toBuffer();
+
   const params = {
     Bucket: process.env.BUCKET_NAME,
     Key: name,
-    Body: fileBuffer,
-    ContentType: mimeType,
+    Body: resizedImage,
+    ContentType: result.mime,
   };
-  //upload file to s3 bucket
+
   const command = new PutObjectCommand(params);
   await s3Client.send(command);
 
-  console.log(`im here`);
-
-  //update user resume column to new resume
-  const update_params = {
+  const updateParams = {
     TableName: process.env.DYNAMODB_TABLE_NAME,
-    Key: {
-      id: user_id, // Partition key
-    },
-    UpdateExpression: "SET #resume = :resume",
-    ExpressionAttributeNames: {
-      "#resume": "resume",
-    },
-    ExpressionAttributeValues: {
-      ":resume": name,
-    },
+    Key: { id: user_id },
+    UpdateExpression: "SET #profilePicture = :profilePicture",
+    ExpressionAttributeNames: { "#profilePicture": "profilePicture" },
+    ExpressionAttributeValues: { ":profilePicture": name },
     ReturnValues: ReturnValue.ALL_OLD,
   };
 
-  // Update the application status
-  const update_command = new UpdateCommand(update_params);
-  const update_response = await dynamoDb.send(update_command);
-  const oldImage = update_response.Attributes?.resume;
+  const updateCommand = new UpdateCommand(updateParams);
+  const updateResponse = await dynamoDb.send(updateCommand);
+
+  // Optionally delete the previous image
+  const oldImage = updateResponse.Attributes?.profilePicture;
   if (oldImage) {
     const deleteParams = {
       Bucket: process.env.BUCKET_NAME,
@@ -57,7 +68,8 @@ async function uploadFileToS3(file: Buffer, name: string, user_id: string) {
     };
     await s3Client.send(new DeleteObjectCommand(deleteParams));
   }
-  //test overriding (meaning user uploads new resume replacing their old one maybe delete the old one?)
+
+  return true;
 }
 
 export async function POST(request: Request) {
@@ -79,30 +91,33 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate the file type
-    if (file.type !== "application/pdf") {
+    if (file.size > 2 * 1024 * 1024) {
       return NextResponse.json(
-        { error: "Only PDF files are allowed." },
-        { status: 400 }
-      );
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: "File size exceeds 5MB." },
+        { error: "File size exceeds 2MB." },
         { status: 400 }
       );
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const imageName = s3RandomImgName();
-    await uploadFileToS3(buffer, imageName, userID);
-    return NextResponse.json(
-      { message: "Success resume uploaded" },
-      { status: 200 }
-    );
+    const funcResult = await uploadFileToS3(buffer, imageName, userID);
+    if (funcResult) {
+      return NextResponse.json(
+        { message: "Success profile image uploaded!" },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        { message: "file is not in correct format" },
+        { status: 400 }
+      );
+    }
   } catch (e) {
-    console.log(e);
-    return NextResponse.json({ message: "server error" }, { status: 500 });
+    console.error("Error uploading profile image:", e);
+    return NextResponse.json(
+      { message: "An unexpected error occurred." },
+      { status: 500 }
+    );
   }
 }
 
