@@ -29,7 +29,7 @@ export default function AboutMe() {
 
         {/* Background Image */}
         <Image
-          src="/images/background-img.png" // Updated path
+          src="/images/background.png" // Updated path
           alt="Background Image"
           fill
           style={{ objectFit: "cover" }}
