@@ -4,7 +4,7 @@ import redisClient from "@/app/lib/redisClient";
 import { QueryCommand, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
 import { Select } from "@aws-sdk/client-dynamodb";
 import { NextResponse, NextRequest } from "next/server";
-import dynamoDb from "../../lib/dynamoClient";
+import { dynamoDb } from "@/app/lib/dynamoClient";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

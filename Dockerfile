@@ -1,5 +1,5 @@
 # Stage 1: Install dependencies and build the Next.js app
-FROM node:18 AS builder
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app

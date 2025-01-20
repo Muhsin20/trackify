@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { ReturnValue } from "@aws-sdk/client-dynamodb";
-import dynamoDb from "../../lib/dynamoClient";
+import { dynamoDb } from "@/app/lib/dynamoClient";
 
 export async function POST(request: Request) {
   const { user_id, newStatus, application_id } = await request.json();

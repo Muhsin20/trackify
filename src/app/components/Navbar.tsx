@@ -37,7 +37,7 @@ export default function Navbar({ transparent = true }: NavbarProps) {
   return (
     <nav
       className={`fixed top-0 left-0 w-full z-20 transition-colors duration-300 ${
-        isScrolled || !transparent ? "bg-gray-900 shadow-md" : "bg-transparent"
+        isScrolled ? "bg-slate-900" : "bg-black"
       }`}
     >
       <div
@@ -63,24 +63,21 @@ export default function Navbar({ transparent = true }: NavbarProps) {
 
         {/* Navigation Links */}
         <div className="flex space-x-12 ml-10">
-          <a href="#" className="text-white hover:text-blue-400 font-medium">
+          <a href="#" className="text-white  hover:text-blue-400 font-bold">
             Home
           </a>
-          <a
-            href="#about"
-            className="text-white hover:text-blue-400 font-medium"
-          >
+          <a href="#about" className="text-white hover:text-blue-400 font-bold">
             About
           </a>
           <a
             href="#services"
-            className="text-white hover:text-blue-400 font-medium"
+            className="text-white hover:text-blue-400 font-bold"
           >
             Services
           </a>
           <a
             href="#contact"
-            className="text-white hover:text-blue-400 font-medium"
+            className="text-white hover:text-blue-400 font-bold"
           >
             Contact
           </a>
@@ -90,13 +87,13 @@ export default function Navbar({ transparent = true }: NavbarProps) {
         <div className="ml-auto flex space-x-6">
           <button
             onClick={handleButtonClick}
-            className="w-24 h-8 bg-gradient-to-r from-blue-500 to-green-400 text-white text-sm font-medium rounded-full shadow-sm"
+            className="w-24 h-8 text-white text-sm font-bold rounded-full shadow-sm"
           >
             Log in
           </button>
           <button
             onClick={handleButtonClick2}
-            className="w-24 h-8 bg-gradient-to-r from-blue-500 to-green-400 text-white text-sm font-medium rounded-full shadow-sm"
+            className="w-24 h-8 text-white text-sm font-bold rounded-full shadow-sm"
           >
             Sign up
           </button>

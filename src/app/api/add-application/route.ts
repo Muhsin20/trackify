@@ -1,4 +1,4 @@
-import dynamoDb from "../../lib/dynamoClient";
+import { dynamoDb } from "@/app/lib/dynamoClient";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";

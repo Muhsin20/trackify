@@ -4,7 +4,7 @@ import redisClient from "@/app/lib/redisClient";
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { Select } from "@aws-sdk/client-dynamodb";
 import { NextResponse } from "next/server";
-import dynamoDb from "../../lib/dynamoClient";
+import { dynamoDb } from "@/app/lib/dynamoClient";
 /* eslint-disable no-unused-vars */
 
 const getApplicationsByStatus = async (userId: string, status: string) => {

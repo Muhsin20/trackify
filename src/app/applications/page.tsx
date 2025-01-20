@@ -39,12 +39,9 @@ const ApplicationComponent = () => {
         request.status == 401 ||
         request.status == 400
       ) {
-        console.log(request.status);
         router.push("/");
       } else {
         const result = await request.json();
-        console.log(result.message);
-        console.log(result.user);
         setUserID(result.user.id);
         setEmail(result.user.email);
         setUsername(result.user.username);

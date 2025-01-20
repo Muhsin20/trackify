@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import redisClient from "@/app/lib/redisClient";
-import dynamoDb from "@/app/lib/dynamoClient";
+import { dynamoDb } from "@/app/lib/dynamoClient";
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 
 export async function GET() {
