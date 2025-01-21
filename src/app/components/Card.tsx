@@ -35,22 +35,17 @@ export default function Card({ title, title2, subtitle }: CardProps) {
           password: formData.password,
         }),
       });
-      console.log("lets see");
-      if (!request.ok) {
-        console.log("nope");
 
+      if (!request.ok) {
         const result = await request.json();
-        console.log(`result is: ${result}`);
+
         const message = result.message ? result.message : "";
-        console.log(message);
 
         alert(`${message}`);
       } else {
         const result = await request.json();
-        console.log(`result is ${result.message}`);
-        router.push("/dashboard");
 
-        console.log("moving");
+        router.push("/dashboard");
       }
     }
   }

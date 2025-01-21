@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [username, setUsername] = useState("");
   const [id, setID] = useState();
   const [applicationsByStatus, setApplicationsByStatus] = useState([]);
+  const [profileImage, setProfileImage] = useState("");
   const router = useRouter(); // Initialize the router
   useEffect(() => {
     async function authUser() {
@@ -49,13 +50,31 @@ export default function Dashboard() {
 
     fetchApplicationsByStatus();
   }, []);
-  if (id) {
-    console.log("");
-  }
+  useEffect(() => {
+    async function fetchProfilePicture() {
+      const request = await fetch("/api/get-profile-picture", {
+        method: "GET",
+        credentials: "include",
+      });
+      if (
+        request.status === 500 ||
+        request.status === 401 ||
+        request.status === 400 ||
+        request.status === 404
+      ) {
+        setProfileImage("");
+      } else {
+        const result = await request.json();
+        setProfileImage(result.message);
+      }
+    }
+    fetchProfilePicture();
+  }, []);
+
   return (
     <>
       <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
-        <Sidebar username={username} email={email} />
+        <Sidebar username={username} email={email} profilePic={profileImage} />
         <div className="bg-white rounded-lg pb-4 shadow h-[200vh]">
           <TopBar username={username} />
           <Grid stats={applicationsByStatus} />

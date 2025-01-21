@@ -3,7 +3,7 @@
 import Sidebar from "../components/Sidebar";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
+import { ToastContainer, toast } from "react-toastify";
 export default function Profile() {
   const router = useRouter();
 
@@ -11,6 +11,7 @@ export default function Profile() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
+  const [id, setID] = useState("");
   const [profileImage, setProfileImage] = useState(""); // State for profile image
 
   // Fetch user data
@@ -30,6 +31,7 @@ export default function Profile() {
         const result = await request.json();
         setEmail(result.user.email);
         setUsername(result.user.username);
+        setID(result.user.id);
       }
       setLoading(false);
     }
@@ -37,13 +39,45 @@ export default function Profile() {
   }, [router]);
 
   // Handle image upload future call to databse - muhsins part
-  const uploadProfilePicture = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadProfilePicture = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files; // Get the FileList from the input
     if (files && files.length > 0) {
       const file = files[0]; // Get the first file
-
-      const imageUrl = URL.createObjectURL(file); // Create a temporary URL for the image
-      // setProfileImage(imageUrl); // Set the state with the image URL
+      const formData = new FormData();
+      formData.append("userID", id);
+      formData.append("file", file);
+      const request = await fetch("/api/add-profile-picture", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      if (!request.ok) {
+        try {
+          const result = await request.json();
+          toast.error("Failed to upload profile picture!", {
+            position: "top-center",
+            autoClose: 5000,
+          });
+        } catch {
+          toast.error("Failed to upload profile picture!", {
+            position: "top-center",
+            autoClose: 5000,
+          });
+        }
+        return;
+      } else {
+        const imageUrl = URL.createObjectURL(file); // Create a temporary URL for the image
+        toast.success("Profile Picture Added!", {
+          position: "top-center",
+          autoClose: 5000,
+        });
+        setProfileImage(imageUrl); // Set the state with the image URL
+      }
+    } else {
+      alert("No file selected!");
+      return;
     }
   };
 
@@ -59,7 +93,7 @@ export default function Profile() {
         request.status === 400 ||
         request.status === 404
       ) {
-        alert("Server Error");
+        setProfileImage("");
       } else {
         const result = await request.json();
         setProfileImage(result.message);
@@ -80,7 +114,7 @@ export default function Profile() {
   return (
     <>
       <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
-        <Sidebar username={username} email={email} />
+        <Sidebar username={username} email={email} profilePic={profileImage} />
         <div className="bg-white rounded-lg pb-8 shadow h-full">
           {/* Header */}
           <div className="flex justify-between items-center mb-6 ml-5 mt-5">
@@ -89,7 +123,7 @@ export default function Profile() {
               <span className="text-purple-600">Page</span>
             </h1>
           </div>
-
+          <ToastContainer />
           {/* User Info Section */}
           <div className="flex flex-col items-center">
             <div className="relative">

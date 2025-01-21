@@ -51,7 +51,7 @@ const ApplicationComponent = () => {
   }, []);
 
   const [isMounted, setIsMounted] = useState(false);
-
+  const [profileImage, setProfileImage] = useState("");
   const currentPageFromURL = parseInt(searchParams.get("page") || "1", 10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   // When component mounts, set the correct currentPage from the URL
@@ -73,10 +73,6 @@ const ApplicationComponent = () => {
 
         const result = await request.json();
         if (request.ok) {
-          console.log(
-            `Fetched applications for page ${currentPage}`,
-            result.applications
-          );
           setApplications(result.applications || []);
           setJobLength(result.applications_length || 0);
         }
@@ -85,6 +81,26 @@ const ApplicationComponent = () => {
       getApplicationsForPage();
     }
   }, [currentPage, isMounted]);
+  useEffect(() => {
+    async function fetchProfilePicture() {
+      const request = await fetch("/api/get-profile-picture", {
+        method: "GET",
+        credentials: "include",
+      });
+      if (
+        request.status === 500 ||
+        request.status === 401 ||
+        request.status === 400 ||
+        request.status === 404
+      ) {
+        setProfileImage("");
+      } else {
+        const result = await request.json();
+        setProfileImage(result.message);
+      }
+    }
+    fetchProfilePicture();
+  }, []);
 
   const [applications, setApplications] = useState<Application[]>([]);
   const [userID, setUserID] = useState();
@@ -107,8 +123,6 @@ const ApplicationComponent = () => {
   });
 
   const applicationsPerPage = 10;
-  console.log(`length is ${jobLength}`);
-  console.log(`applications length is: ${applicationsPerPage}`);
   const totalPages = Math.ceil(jobLength / applicationsPerPage);
 
   const handleOpenModalForm = () => setShowModalForm(true); // Open Add Application Modal
@@ -150,7 +164,6 @@ const ApplicationComponent = () => {
     e.preventDefault();
 
     // Simulating API call - can be replaced with actual API logic - muhsin
-    console.log("Simulating API call:", newApplication);
 
     //check if they are empty return an alert message
     // Check if any required field is missing
@@ -187,7 +200,7 @@ const ApplicationComponent = () => {
 
     if (data.statusCode === 200) {
       //put a snackbar or notification at the top
-      console.log("Added");
+
       toast.success("Job Added!", {
         position: "top-center",
         autoClose: 5000,
@@ -202,7 +215,6 @@ const ApplicationComponent = () => {
         applicationWithId,
       ]);
     } else {
-      console.log("error");
       alert(data.message);
     }
 
@@ -241,11 +253,9 @@ const ApplicationComponent = () => {
           )
         );
       } else {
-        console.log("error");
         alert(data.message);
       }
     } catch (error) {
-      console.error("Error editing status:", error);
       toast.error("Failed to edit job application. Please try again.");
     }
   };
@@ -253,7 +263,7 @@ const ApplicationComponent = () => {
   return (
     <div>
       <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
-        <Sidebar username={username} email={email} />
+        <Sidebar username={username} email={email} profilePic={profileImage} />
         <div className="bg-gray-50 rounded-lg pb-4 shadow h-full">
           <TopBar username={username} />
           <div className="p-8">

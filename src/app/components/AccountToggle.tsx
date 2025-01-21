@@ -4,13 +4,18 @@ import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 interface UserProps {
   username: string;
   email: string;
+  profilePic: string;
 }
-const AccountToggle: React.FC<UserProps> = ({ username, email }) => {
+const AccountToggle: React.FC<UserProps> = ({
+  username,
+  email,
+  profilePic,
+}) => {
   return (
     <div className="border-b mb-4 mt-2 pb-4 border-stone-300">
       <button className="flex items-center gap-2 p-0.5 hover:bg-stone-200 rounded transition-colors w-full relative">
         <img
-          src="https://api.dicebear.com/9.x/notionists/svg"
+          src={profilePic || "https://api.dicebear.com/9.x/notionists/svg"}
           alt="avatar"
           className="w-8 h-8 rounded shrink-0 bg-violet-500 shadow"
         />

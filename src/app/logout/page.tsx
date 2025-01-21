@@ -1,8 +1,9 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 export default function Logout() {
   const router = useRouter(); // Initialize the router
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     async function logout() {
       const request = await fetch("/api/logout", {
@@ -22,12 +23,17 @@ export default function Logout() {
         console.log(result.user);
         router.push("/");
       }
+      setLoading(false);
     }
     logout();
   }, []);
-  return (
-    <>
-      <div>401 Error</div>
-    </>
-  );
+  // Display loading indicator while fetching data
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-lg font-medium">Loading...</p>
+      </div>
+    );
+  }
+  return <></>;
 }
