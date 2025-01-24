@@ -107,33 +107,3 @@ export async function POST(request: Request) {
 }
 
 //code for later for users to see their resume: import { GetObjectCommand } from "@aws-sdk/client-s3";
-
-// export async function GET(request: Request) {
-//     try {
-//       const { userID } = await request.json();
-
-//       // Fetch the user record from DynamoDB
-//       const userParams = {
-//         TableName: process.env.DYNAMODB_TABLE_NAME,
-//         Key: { id: userID },
-//       };
-//       const userCommand = new GetCommand(userParams);
-//       const userResponse = await dynamoDb.send(userCommand);
-
-//       if (!userResponse.Item || !userResponse.Item.resume) {
-//         return NextResponse.json({ error: "Resume not found." }, { status: 404 });
-//       }
-
-//       // Generate a signed URL for the resume
-//       const command = new GetObjectCommand({
-//         Bucket: process.env.BUCKET_NAME,
-//         Key: userResponse.Item.resume,
-//       });
-
-//       const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // 1 hour expiration
-//       return NextResponse.json({ signedUrl });
-//     } catch (error) {
-//       console.error("Error fetching resume:", error);
-//       return NextResponse.json({ message: "Server error" }, { status: 500 });
-//     }
-//   }
