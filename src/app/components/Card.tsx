@@ -121,7 +121,7 @@ export default function Card({ title, title2, subtitle }: CardProps) {
                 <button
                   type="submit"
                   data-testid="submit-button"
-                  className="w-full py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition duration-300"
+                  className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-600 transition duration-300"
                 >
                   Continue
                 </button>

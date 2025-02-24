@@ -46,6 +46,7 @@ interface JobApplicationProps {
   status: string;
   onEditStatus: (newStatus: string) => void; // Callback for updating status
   onViewDetails: () => void; // Callback for opening the modal with general info
+  onDelete: () => void;
 }
 
 const JobApplication: React.FC<JobApplicationProps> = ({
@@ -56,6 +57,7 @@ const JobApplication: React.FC<JobApplicationProps> = ({
   status,
   onEditStatus,
   onViewDetails,
+  onDelete,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -139,18 +141,30 @@ const JobApplication: React.FC<JobApplicationProps> = ({
       </a>
 
       {isHovered && !isEditing && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent modal from opening
-            setIsEditing(true);
-          }}
-          className="absolute top-4 right-4 px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded shadow"
-        >
-          Edit
-        </button>
-      )}
-    </div>
-  );
-};
+  <div className="absolute top-4 right-4 flex space-x-2">
+    {/* Edit Button */}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        setIsEditing(true);
+      }}
+      className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded shadow"
+    >
+      Edit
+    </button>
 
+    {/* Delete Button (Trash Icon) */}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onDelete(); // Call delete function
+      }}
+      className="px-3 py-1 text-sm text-red-600 hover:text-white hover:bg-red-600 rounded shadow"
+    >
+      🗑️
+    </button>
+  </div>
+)}
+</div>
+  )}
 export default JobApplication;

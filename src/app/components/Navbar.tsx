@@ -1,99 +1,64 @@
 "use client";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 interface NavbarProps {
-  transparent?: boolean; // Optional prop to control initial transparency
+  transparent?: boolean;
 }
 
-export default function Navbar({ transparent = true }: NavbarProps) {
+export default function Navbar({ transparent = false }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter();
 
-  const handleButtonClick = () => {
-    router.push("/login");
-  };
-  const handleButtonClick2 = () => {
-    router.push("/register");
-  };
-
-  const navigateToAboutMe = () => {
-    router.push("/AboutMe");
-  };
-
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10); // Change transparency on scroll
+      setIsScrolled(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-20 transition-colors duration-300 ${
-        isScrolled ? "bg-slate-900" : "bg-black"
+      className={`fixed top-0 left-0 w-full z-20 transition-all duration-300 ${
+        isScrolled ? "bg-gray-900 shadow-md" : "bg-black"
       }`}
     >
-      <div
-        className="max-w-screen-xl flex items-center justify-between mx-auto px-4"
-        style={{ height: "64px" }}
-      >
-        {/* Logo and Brand Name */}
-        <div
-          className="flex items-center cursor-pointer"
-          onClick={navigateToAboutMe}
-        >
-          <Image
-            src="/images/trackify-cloud-logo.png"
-            alt="Trackify Logo"
-            width={40}
-            height={40}
-            className="h-auto max-h-[40px]"
-          />
-          <span className="text-2xl font-semibold whitespace-nowrap text-white ml-2">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+        {/* Logo */}
+        <div className="flex items-center cursor-pointer" onClick={() => router.push("/AboutMe")}>
+          <Image src="/images/trackify-cloud-logo.png" alt="Trackify Logo" width={40} height={40} />
+          <span className="text-xl font-semibold text-white ml-3 tracking-wide">
             Trackify
           </span>
         </div>
 
         {/* Navigation Links */}
-        <div className="flex space-x-12 ml-10">
-          <a href="#" className="text-white  hover:text-blue-400 font-bold">
-            Home
-          </a>
-          <a href="#about" className="text-white hover:text-blue-400 font-bold">
-            About
-          </a>
-          <a
-            href="#services"
-            className="text-white hover:text-blue-400 font-bold"
-          >
-            Services
-          </a>
-          <a
-            href="#contact"
-            className="text-white hover:text-blue-400 font-bold"
-          >
-            Contact
-          </a>
+        <div className="hidden md:flex space-x-8">
+          {["Home", "About", "Services", "Contact"].map((link, index) => (
+            <a
+              key={index}
+              href={`#${link.toLowerCase()}`}
+              className="text-white text-sm font-medium tracking-wide relative group transition-all duration-300 hover:text-purple-400"
+            >
+              {link}
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-purple-400 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+          ))}
         </div>
 
-        {/* Auth Links */}
-        <div className="ml-auto flex space-x-6">
+        {/* Auth Buttons */}
+        <div className="flex space-x-4">
           <button
-            onClick={handleButtonClick}
-            className="w-24 h-8 text-white text-sm font-bold rounded-full shadow-sm"
+            onClick={() => router.push("/login")}
+            className="px-5 py-2 text-sm font-medium text-white bg-transparent border border-white rounded-full transition-all hover:bg-white hover:text-gray-900"
           >
             Log in
           </button>
           <button
-            onClick={handleButtonClick2}
-            className="w-24 h-8 text-white text-sm font-bold rounded-full shadow-sm"
+            onClick={() => router.push("/register")}
+            className="px-5 py-2 text-sm font-medium text-white bg-purple-600 rounded-full transition-all hover:bg-purple-500"
           >
             Sign up
           </button>

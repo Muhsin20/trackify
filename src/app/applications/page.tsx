@@ -74,7 +74,7 @@ const ApplicationComponent = () => {
         const result = await request.json();
         if (request.ok) {
           setApplications(result.applications || []);
-          setJobLength(result.applications_length || 0);
+          setJobLength(result.applications_length || 1);
         }
       }
 
@@ -104,7 +104,7 @@ const ApplicationComponent = () => {
 
   const [applications, setApplications] = useState<Application[]>([]);
   const [userID, setUserID] = useState();
-  const [jobLength, setJobLength] = useState(0);
+  const [jobLength, setJobLength] = useState(1);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
 
@@ -162,6 +162,17 @@ const ApplicationComponent = () => {
   let tempIdCounter = 0;
   const handleSaveApplication = async (e: React.FormEvent) => {
     e.preventDefault();
+
+
+
+    // Prevent submission if over 1000 characters
+    if (newApplication.description.length > 1000) {
+      toast.error("Description cannot exceed 1000 characters!", {
+        position: "top-center",
+        autoClose: 5000,
+      });
+      return; // Stop submission
+    }
 
     // Simulating API call - can be replaced with actual API logic - muhsin
 
@@ -260,6 +271,44 @@ const ApplicationComponent = () => {
     }
   };
 
+  const handleDeleteApplication = async (id: number) => {
+    try {
+      //console.log(`user id is ${userID} and applicationid is ${id}`);
+      const response = await fetch("/api/delete-application", {
+        method: "DELETE", // Ensure your backend supports this
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userID,
+          applicationId: id,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to delete application");
+      }
+  
+      const data = await response.json();
+  
+      if (data.statusCode === 200) {
+        toast.success("Job Deleted!", {
+          position: "top-center",
+          autoClose: 5000,
+        });
+  
+        // Remove from the UI
+        setApplications((prev) => prev.filter((app) => app.application_id !== id));
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      toast.error("Failed to delete job application. Please try again.");
+    }
+  };
+  
+
   return (
     <div>
       <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
@@ -315,6 +364,8 @@ const ApplicationComponent = () => {
                       handleEditStatus(app.application_id, newStatus)
                     } // Pass edit callback
                     onViewDetails={() => handleOpenViewModal(app)} // Pass view callback
+                    onDelete={() => handleDeleteApplication(app.application_id)} // ADD THIS PROP
+
                   />
                 ))}
               </div>
@@ -446,22 +497,32 @@ const ApplicationComponent = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Description
-                      </label>
-                      <textarea
-                        name="description"
-                        value={newApplication.description}
-                        onChange={(e) =>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Description (Max 1000 characters)
+                    </label>
+                    <textarea
+                      name="description"
+                      value={newApplication.description}
+                      onChange={(e) => {
+                        if (e.target.value.length <= 1000) {
                           setNewApplication((prev) => ({
                             ...prev,
-                            description: e.target.value,
-                          }))
+                            description: e.target.value, 
+                          }));
                         }
-                        placeholder="Describe the role"
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      ></textarea>
-                    </div>
+                      }}
+                      placeholder="Describe the role"
+                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ></textarea>
+
+                    {/* Character Counter */}
+                    <p className={`text-sm mt-1 ${newApplication.description.length > 999 ? 'text-red-500' : 'text-gray-500'}`}>
+                      {newApplication.description.length}/1000 characters
+                    </p>
+                  </div>
+
+
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         Status
