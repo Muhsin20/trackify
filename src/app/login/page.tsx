@@ -1,6 +1,8 @@
 "use client";
 import Card from "../components/Card";
 import Navbar from "../components/Navbar";
+import Footer from "../components/footer"; // Adjust the import path based on your file structure
+
 
 export default function Login() {
   //make a google login sso
@@ -18,18 +20,8 @@ export default function Login() {
         </div>
       </div>
 
-      <footer className="bg-gradient-to-r from-purple-900 via-blue-900 to-black text-white py-8">
-        <div className="max-w-screen-xl mx-auto text-center">
-          <p className="text-sm">
-            © {new Date().getFullYear()}{" "}
-            <span className="text-purple-400 font-bold">Trackify</span>. All
-            rights reserved.
-          </p>
-          <p className="text-sm mt-2">
-            Crafted with ❤️ to empower your professional journey.
-          </p>
-        </div>
-      </footer>
+      <Footer />
+
     </>
   );
 }

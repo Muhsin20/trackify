@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import * as Yup from "yup";
+import Footer from "../components/footer"; // Adjust the import path based on your file structure
+
 
 export default function Register() {
   interface Form {
@@ -187,18 +189,8 @@ export default function Register() {
       </div>
 
       {/* Footer Section */}
-      <footer className="bg-gradient-to-r from-purple-900 via-blue-900 to-black text-white py-6">
-        <div className="max-w-screen-xl mx-auto text-center text-sm">
-          <p>
-            © {new Date().getFullYear()}{" "}
-            <span className="text-purple-400 font-bold">Trackify</span>. All
-            rights reserved.
-          </p>
-          <p className="mt-1">
-            Crafted with ❤️ to empower your professional journey.
-          </p>
-        </div>
-      </footer>
+      <Footer />
+
     </>
   );
 }
