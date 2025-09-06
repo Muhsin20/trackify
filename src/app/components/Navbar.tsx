@@ -24,15 +24,17 @@ export default function Navbar({ transparent = false }: NavbarProps) {
     setIsMenuOpen(false);
   
     // Map link names to their corresponding section IDs
-    const sectionMap = {
+    const sectionMap: Record<string, string> = {
       HOME: "/AboutMe",
       ABOUT: "WHAT-WE-DO",
       "HOW IT WORKS": "HOW-IT-WORKS",
       FAQS: "FAQS",
     };
     
-  
-    const sectionId = sectionMap[link];
+    let sectionId;
+    if ( link in sectionMap ) {
+    sectionId = sectionMap[link];
+  }
   
     if (sectionId) {
       if (window.location.pathname === "/AboutMe") {
