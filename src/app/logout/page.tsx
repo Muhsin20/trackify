@@ -39,14 +39,6 @@ export default function Logout() {
     return (
       <>
         <LoadingOverlay show={true} />
-        <div className="flex justify-center items-center h-full">
-          <Card
-            title="Hello!"
-            title2="Welcome Back!"
-            subtitle="Sign into your account"
-            setLoading={setLoading}
-          />
-        </div>
       </>
     );
   }
