@@ -1,39 +1,56 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import LoadingOverlay from "../components/LoadingOverlay";
+import Card from "../components/Card";
+
 export default function Logout() {
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     async function logout() {
-      const request = await fetch("/api/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      if (
-        request.status == 500 ||
-        request.status == 400 ||
-        request.status == 500
-      ) {
-        console.log(request.status);
+      try {
+        const request = await fetch("/api/logout", {
+          method: "POST",
+          credentials: "include",
+        });
+
+        if (!request.ok) {
+          console.log("Logout failed:", request.status);
+        } else {
+          const result = await request.json();
+          console.log(result.message, result.user);
+        }
+      } catch (err) {
+        console.error("Logout error:", err);
+      } finally {
+        // redirect back home after logout attempt
         router.push("/");
-      } else {
-        const result = await request.json();
-        console.log(result.message);
-        console.log(result.user);
-        router.push("/");
+        setLoading(false);
       }
-      setLoading(false);
     }
+
     logout();
-  }, []);
-  // Display loading indicator while fetching data
+  }, [router]);
+
+  // While logging out
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-lg font-medium">Loading...</p>
-      </div>
+      <>
+        <LoadingOverlay show={true} />
+        <div className="flex justify-center items-center h-full">
+          <Card
+            title="Hello!"
+            title2="Welcome Back!"
+            subtitle="Sign into your account"
+            setLoading={setLoading}
+          />
+        </div>
+      </>
     );
   }
-  return <></>;
+
+  // Once loading is false, you can either show nothing or redirect is already handled
+  return null;
 }
