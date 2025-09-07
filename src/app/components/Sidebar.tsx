@@ -1,6 +1,5 @@
 import AccountToggle from "./AccountToggle";
 import RouteSelect from "./RouteSelect";
-import Search from "./Search";
 interface UserProps {
   username: string;
   email: string;
@@ -15,7 +14,6 @@ const Sidebar: React.FC<UserProps> = ({ username, email, profilePic }) => {
           email={email}
           profilePic={profilePic}
         />
-        <Search />
         <RouteSelect />
       </div>
     </div>
