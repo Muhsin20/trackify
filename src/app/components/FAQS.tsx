@@ -21,11 +21,11 @@ const FAQS = () => {
       answer:
         "Yes, Trackify offers a free plan with essential features. We also have premium plans for advanced tools and insights.",
     },
-    {
-      question: "Can I cancel my subscription at any time?",
-      answer:
-        "Absolutely! You can cancel your subscription anytime, and you'll retain access to premium features until the end of your billing cycle.",
-    },
+    // {
+    //   question: "Can I cancel my subscription at any time?",
+    //   answer:
+    //     "Absolutely! You can cancel your subscription anytime, and you'll retain access to premium features until the end of your billing cycle.",
+    // },
     {
       question: "How do I contact support?",
       answer:
