@@ -41,6 +41,9 @@ export async function POST(request: Request) {
           message: "Success your logged in!",
           user,
         });
+
+        response.headers.set("Cache-Control", "no-store"); //ADDEDDD this new piece of code for login issue
+
         response.cookies.set(`auth-token`, id, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production", // Use HTTPS in production

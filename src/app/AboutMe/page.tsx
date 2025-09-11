@@ -60,18 +60,28 @@ export default function AboutMe() {
   return (
     <>
       <Navbar />
+{/* Hero Section */}
+<div className="relative w-full h-[400px] md:h-[600px] pt-24 flex items-center justify-center px-4 sm:px-8 overflow-hidden bg-gradient-to-b from-white via-purple-50 to-white">
+  {/* --- Decorative layer (fun + professional) --- */}
+  <div aria-hidden className="pointer-events-none absolute inset-0">
+    {/* faint grid */}
+    <svg className="absolute inset-0 h-full w-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+          <path d="M36 0H0V36" fill="none" stroke="#1f2937" strokeWidth="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid)" />
+    </svg>
 
-      {/* Hero Section */}
-      <div className="relative w-full h-[400px] md:h-[600px] pt-24 bg-gradient-to-b from-purple-200 via-white to-white flex items-center justify-center px-4 sm:px-8">
-        {/* Add priority to hero image */}
-        <Image
-          src="/images/background.png"
-          alt="Background"
-          fill
-          priority
-          className="absolute inset-0 z-0 opacity-30"
-          style={{ objectFit: "cover" }}
-        />
+    {/* blurred orbs (subtle movement) */}
+    <div className="absolute -top-16 -left-16 h-72 w-72 rounded-full bg-fuchsia-300/40 blur-[90px] motion-safe:animate-[float1_16s_ease-in-out_infinite]" />
+    <div className="absolute -bottom-16 -right-20 h-80 w-80 rounded-full bg-indigo-300/40 blur-[100px] motion-safe:animate-[float2_18s_ease-in-out_infinite]" />
+
+    {/* rotating ring halo */}
+    <div className="absolute right-16 top-20 h-64 w-64 rounded-full ring-8 ring-purple-200/50 motion-safe:animate-[slowspin_36s_linear_infinite]" />
+  </div>
+
 
         <div className="relative flex flex-col items-center text-center z-10 space-y-4 md:space-y-6">
           <Fade triggerOnce>
@@ -120,6 +130,8 @@ export default function AboutMe() {
             </button>
           </Fade>
         </div>
+
+        
       </div>
 
       {/* About Us Section */}
@@ -334,6 +346,7 @@ export default function AboutMe() {
     {/* Footer Section */}
       <Footer />
     {/* Footer end */}
+
 
     </>
   );

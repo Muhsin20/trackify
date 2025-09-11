@@ -7,7 +7,7 @@ interface NavbarProps {
   transparent?: boolean;
 }
 
-export default function Navbar({ transparent = false }: NavbarProps) {
+export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
@@ -21,44 +21,42 @@ export default function Navbar({ transparent = false }: NavbarProps) {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const handleNavigation = (link: string) => {
-    setIsMenuOpen(false);
-  
-    // Map link names to their corresponding section IDs
-    const sectionMap: Record<string, string> = {
-      HOME: "/AboutMe",
-      ABOUT: "WHAT-WE-DO",
-      "HOW IT WORKS": "HOW-IT-WORKS",
-      FAQS: "FAQS",
-    };
-    
-    let sectionId;
-    if ( link in sectionMap ) {
-    sectionId = sectionMap[link];
-  }
-  
-    if (sectionId) {
-      if (window.location.pathname === "/AboutMe") {
-        // If already on the AboutMe page, scroll to the section
-        setTimeout(() => {
-          const sectionElement = document.getElementById(sectionId);
-          if (sectionElement) {
-            sectionElement.scrollIntoView({ behavior: "smooth" });
-          }
-        }, 100); // Short delay to ensure the page is ready
-      } else {
-        // If not on the AboutMe page, navigate to the AboutMe page with the hash
-        router.push(`/AboutMe#${sectionId}`);
-  
-        // Wait for the page to load, then scroll to the section
-        setTimeout(() => {
-          const sectionElement = document.getElementById(sectionId);
-          if (sectionElement) {
-            sectionElement.scrollIntoView({ behavior: "smooth" });
-          }
-        }, 500); // Adjust delay based on page load time
-      }
+  setIsMenuOpen(false);
+
+  if (link === "HOME") {
+    if (window.location.pathname === "/AboutMe") {
+      // Already on AboutMe page → just scroll to top
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      // Navigate to AboutMe page → no section hash
+      router.push("/AboutMe");
     }
+    return; // stop here so it doesn't look for sectionMap
+  }
+
+  // Map link names to their corresponding section IDs
+  const sectionMap: Record<string, string> = {
+    ABOUT: "WHAT-WE-DO",
+    "HOW IT WORKS": "HOW-IT-WORKS",
+    FAQS: "FAQS",
   };
+
+  const sectionId = sectionMap[link];
+
+  if (sectionId) {
+    if (window.location.pathname === "/AboutMe") {
+      setTimeout(() => {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      router.push(`/AboutMe#${sectionId}`);
+      setTimeout(() => {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+      }, 500);
+    }
+  }
+};
+
 
   
   return (
