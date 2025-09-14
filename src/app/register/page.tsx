@@ -9,6 +9,8 @@ import dynamic from "next/dynamic";
 // client-only so random stars don't break hydration
 const LoginBackground = dynamic(() => import("../components/LoginBackground"), { ssr: false });
 
+
+
 export default function Register() {
   interface Form {
     username: string;

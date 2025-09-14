@@ -21,16 +21,16 @@ const MeetOurExperts: React.FC<{ experts: Expert[] }> = ({ experts }) => {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex flex-col items-center">
               {/* Profile Image */}
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-purple-100 mb-6">
-                <Image
-                  src={expert.photo}
-                  alt={expert.name}
-                  width={128}
-                  height={128}
-                  className="object-cover w-full h-full"
-                  loader={({ src }) => `${src}?w=100&h=100`}
-                />
-              </div>
+              <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-purple-100 mb-6">
+              <Image
+                src={expert.photo}
+                alt={expert.name}
+                fill
+                sizes="128px"
+                className="object-cover object-top"
+              />
+            </div>
+
 
               {/* Details */}
               <h3 className="text-xl font-bold text-gray-800">{expert.name}</h3>
