@@ -39,9 +39,15 @@ export default function Navbar() {
     ABOUT: "WHAT-WE-DO",
     "HOW IT WORKS": "HOW-IT-WORKS",
     FAQS: "FAQS",
+    CONTACT: "/Contact"
   };
 
   const sectionId = sectionMap[link];
+
+  if( link === "CONTACT" ) {
+      router.push(sectionId ? sectionId : "")
+      return
+    }
 
   if (sectionId) {
     if (window.location.pathname === "/AboutMe") {
