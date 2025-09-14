@@ -54,7 +54,7 @@ const Footer: React.FC<FooterProps> = ({
                 { label: "About Us", href: "/about" },
                 { label: "Features", href: "/features" },
                 { label: "Pricing", href: "/pricing" },
-                { label: "Contact", href: "/contact" },
+                { label: "Contact", href: "/Contact" },
               ].map((link, index) => (
                 <li key={index}>
                   <Link
