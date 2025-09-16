@@ -6,7 +6,6 @@ import TopBar from "../components/TopBar";
 import JobApplication from "../components/JobApplication";
 import { ToastContainer, toast } from "react-toastify";
 import { useRouter, useSearchParams } from "next/navigation";
-//make a google login sso
 interface Application {
   application_id: number;
   title: string;
