@@ -1,6 +1,9 @@
 "use client";
 import React, { useState } from "react";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
+// optional, if you want to read fields client-side (not required for auth)
+import { jwtDecode } from "jwt-decode";
 
 interface CardProps {
   title: string;
@@ -33,7 +36,7 @@ export default function LoginCard({ title, title2, subtitle, setLoading }: CardP
         alert(result?.message ?? "Login failed");
         return;
       }
-    router.replace("/dashboard");
+      router.replace("/dashboard");
     } finally {
       setLoading?.(false);
     }
@@ -45,12 +48,44 @@ export default function LoginCard({ title, title2, subtitle, setLoading }: CardP
     setFormData((p) => ({ ...p, [name]: value }));
   }
 
+  // Google success handler
+  async function handleGoogleSuccess(cred: CredentialResponse) {
+    try {
+      setLoading?.(true);
+      if (!cred.credential) {
+        alert("No Google credential returned");
+        return;
+      }
+
+      // OPTIONAL: read the token client-side (don’t trust this—server must verify)
+      // const payload = jwtDecode<{ email?: string; name?: string }>(cred.credential);
+
+      // Send ID token to your backend to verify & create session
+      const res = await fetch("/api/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ idToken: cred.credential }),
+      });
+
+      if (!res.ok) {
+        const msg = await res.text();
+        alert(msg || "Google sign-in failed");
+        return;
+      }
+
+      router.replace("/dashboard");
+    } finally {
+      setLoading?.(false);
+    }
+  }
+
   return (
     <div
       className={[
         "w-[920px] max-w-full rounded-3xl overflow-hidden",
         "shadow-xl shadow-indigo-900/20",
-        "bg-white/70 backdrop-blur", // ← was /95, now /70 for more transparency
+        "bg-white/70 backdrop-blur",
         "ring-1 ring-black/5",
       ].join(" ")}
     >
@@ -66,7 +101,7 @@ export default function LoginCard({ title, title2, subtitle, setLoading }: CardP
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label htmlFor="email" className="block text-gray-800 font-medium mb-1"> 
+              <label htmlFor="email" className="block text-gray-800 font-medium mb-1">
                 Email
               </label>
               <input
@@ -100,25 +135,40 @@ export default function LoginCard({ title, title2, subtitle, setLoading }: CardP
             </button>
           </form>
 
-          {/* Divider + signup */}
-<div className="my-6 flex items-center gap-4">
-  <div className="h-px flex-1 bg-gray-700" />
-  <span className="text-xs uppercase tracking-wider text-gray-700">or</span>
-  <div className="h-px flex-1 bg-gray-700" />
-</div>
+          {/* Divider */}
+          <div className="my-6 flex items-center gap-4">
+            <div className="h-px flex-1 bg-gray-300" />
+            <span className="text-xs uppercase tracking-wider text-gray-600">or</span>
+            <div className="h-px flex-1 bg-gray-300" />
+          </div>
 
-<p className="text-center font-extrabold text-gray-900 text-sm">
-  Don’t have an account?{" "}
-  <button
-    onClick={goToSignUp}
-    className="font-semibold text-fuchsia-600 hover:underline hover:text-fuchsia-700 transition"
-  >
-    Sign up now!
-  </button>
-</p>
-</div>
+          {/* Google sign-in button */}
+          <div className="flex justify-center">
+            <GoogleLogin
+              shape="pill"
+              onSuccess={handleGoogleSuccess}
+              onError={() => alert("Google sign-in failed")}
+              // You can tune size/theme/text if you want:
+              // useOneTap // <- optional, enable "One Tap"
+              theme="filled_blue"
+              // size="large"
+              // text="continue_with"
+            />
+          </div>
 
-        {/* Right: glossy gradient panel */}
+          {/* Signup link */}
+          <p className="mt-6 text-center font-extrabold text-gray-900 text-sm">
+            Don’t have an account?{" "}
+            <button
+              onClick={goToSignUp}
+              className="font-semibold text-fuchsia-600 hover:underline hover:text-fuchsia-700 transition"
+            >
+              Sign up now!
+            </button>
+          </p>
+        </div>
+
+        {/* Right panel */}
         <div
           className={[
             "relative md:w-1/2 w-full p-10 text-white",
@@ -126,7 +176,6 @@ export default function LoginCard({ title, title2, subtitle, setLoading }: CardP
             "md:rounded-l-none",
           ].join(" ")}
         >
-          {/* Glass edge/shadow to mimic screenshot overlap */}
           <div className="pointer-events-none absolute inset-0 rounded-none md:rounded-l-[2.5rem] md:-left-1 bg-black/10 blur-[2px]" />
           <div className="relative z-10 flex h-full flex-col items-center justify-center text-center">
             <h3 className="text-3xl font-extrabold mb-4 drop-shadow-sm">{title2}</h3>
@@ -134,8 +183,6 @@ export default function LoginCard({ title, title2, subtitle, setLoading }: CardP
               Access your account and explore the features. Welcome back!
             </p>
           </div>
-
-          {/* Decorative halo */}
           <div className="pointer-events-none absolute -right-8 top-10 h-40 w-40 rounded-full ring-4 ring-white/40" />
         </div>
       </div>
