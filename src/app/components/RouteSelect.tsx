@@ -1,7 +1,7 @@
 "use client";
 
 import { IconType } from "react-icons";
-import { FiBriefcase, FiHome, FiLogOut, FiUser } from "react-icons/fi";
+import { FiBriefcase, FiHome, FiLogOut, FiUser, FiGlobe } from "react-icons/fi";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 export const RouteSelect = () => {
@@ -11,6 +11,7 @@ export const RouteSelect = () => {
   const routes = [
     { title: "Dashboard", icon: FiHome, path: "/dashboard" },
     { title: "My Applications", icon: FiBriefcase, path: "/applications" },
+    { title: "Job Listings", icon: FiGlobe , path: "/remote-jobs" },
     { title: "Profile", icon: FiUser, path: "/profile" },
     { title: "Sign Out", icon: FiLogOut, path: "/logout" },
   ];

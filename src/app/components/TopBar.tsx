@@ -24,7 +24,7 @@ const TopBar: React.FC<UserProps> = ({ username }) => {
       <div className="flex items-center justify-between p-0.5">
         <div>
           <span className="text-sm font-bold block">
-            🚀 Good morning, {username}!
+            🚀 Welcome back, {username != null ? username: "user"}!
           </span>
           <span className="text-xs block text-stone-500">
             {" "}
