@@ -75,7 +75,7 @@ export default function Dashboard() {
     <>
       <main className="grid gap-4 p-4 grid-cols-[220px,_1fr]">
         <Sidebar username={username} email={email} profilePic={profileImage} />
-        <div className="bg-white rounded-lg pb-4 shadow h-[200vh]">
+        <div className="bg-white rounded-lg pb-4 shadow h-full">
           <TopBar username={username} />
           <Grid stats={applicationsByStatus} />
         </div>
