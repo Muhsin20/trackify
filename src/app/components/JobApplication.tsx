@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // ProgressBar Component
 interface ProgressBarProps {
@@ -37,6 +37,23 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ status }) => {
   );
 };
 
+// Utils
+const toLocalInputValue = (iso?: string) => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  // to "YYYY-MM-DDTHH:MM" local time
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const y = d.getFullYear();
+  const m = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  const h = pad(d.getHours());
+  const min = pad(d.getMinutes());
+  return `${y}-${m}-${day}T${h}:${min}`;
+};
+const toISO = (local: string) => (local ? new Date(local).toISOString() : undefined);
+
+
+
 // JobApplication Component
 interface JobApplicationProps {
   jobTitle: string;
@@ -44,7 +61,8 @@ interface JobApplicationProps {
   url: string;
   description: string;
   status: string;
-  onEditStatus: (newStatus: string) => void; // Callback for updating status
+  interviewAtISO?: string; // <-- optional: current scheduled time from DB if any
+  onEditStatus: (payload: { newStatus: string; interviewAtISO?: string }) => void; // <-- changed // Callback for updating status
   onViewDetails: () => void; // Callback for opening the modal with general info
   onDelete: () => void;
 }
@@ -55,6 +73,7 @@ const JobApplication: React.FC<JobApplicationProps> = ({
   url,
   description,
   status,
+  interviewAtISO,
   onEditStatus,
   onViewDetails,
   onDelete,
@@ -63,10 +82,31 @@ const JobApplication: React.FC<JobApplicationProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [newStatus, setNewStatus] = useState(status);
 
+  // local datetime input value "YYYY-MM-DDTHH:mm"
+  const [interviewLocal, setInterviewLocal] = useState<string>(() => {
+  if (!interviewAtISO) return "";
+  const d = new Date(interviewAtISO);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+});
+
+
+  // const handleSave = (e: React.MouseEvent) => {
+  //   e.stopPropagation(); // Prevent modal from opening
+  //   onEditStatus(newStatus); // Call parent callback to save changes
+  //   setIsEditing(false); // Exit edit mode
+  // };
+
   const handleSave = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent modal from opening
-    onEditStatus(newStatus); // Call parent callback to save changes
-    setIsEditing(false); // Exit edit mode
+    e.stopPropagation();
+    onEditStatus({
+      newStatus,
+      interviewAtISO:
+        newStatus === "Interview Scheduled" && interviewLocal
+          ? new Date(interviewLocal).toISOString()
+          : undefined,
+    });
+    setIsEditing(false);
   };
 
   return (
@@ -86,22 +126,25 @@ const JobApplication: React.FC<JobApplicationProps> = ({
       <p className="text-gray-600 font-medium">{companyName}</p>
       <p className="text-gray-700 mt-2">{description}</p>
 
-      {!isEditing ? (
+       {!isEditing ? (
         <>
           <p className="text-sm text-gray-500 mt-1">
             Status: <span className="font-semibold">{status}</span>
+            {interviewAtISO && (
+              <span className="ml-2 text-xs text-gray-500">
+                • Interview: {new Date(interviewAtISO).toLocaleString()}
+              </span>
+            )}
           </p>
           <ProgressBar status={status} />
         </>
       ) : (
-        <div className="mt-2">
-          <label className="block text-sm text-gray-700 font-medium mb-1">
-            Edit Status
-          </label>
+         <div className="mt-2">
+          <label className="block text-sm text-gray-700 font-medium mb-1">Edit Status</label>
           <select
             value={newStatus}
             onChange={(e) => setNewStatus(e.target.value)}
-            onClick={(e) => e.stopPropagation()} // Prevent modal from opening
+            onClick={(e) => e.stopPropagation()}
             className="block w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="Applied">Applied</option>
@@ -110,18 +153,35 @@ const JobApplication: React.FC<JobApplicationProps> = ({
             <option value="Offer Received">Offer Received</option>
             <option value="Rejected">Rejected</option>
           </select>
-          <div className="flex justify-end mt-2 space-x-2">
+
+          {newStatus === "Interview Scheduled" && (
+  <div className="mt-3">
+    <label className="block text-sm text-gray-700 font-medium mb-1">
+      Interview date & time
+    </label>
+    <input
+      type="datetime-local"
+      value={interviewLocal}                      // <- was interviewAtLocal
+      onChange={(e) => setInterviewLocal(e.target.value)}  // <- was setInterviewAtLocal
+      onClick={(e) => e.stopPropagation()}
+      className="block w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    <p className="text-xs text-gray-500 mt-1">
+      This will be saved with the status.
+    </p>
+  </div>
+)}
+
+
+           <div className="flex justify-end mt-2 space-x-2">
             <button
-              onClick={(e) => {
-                e.stopPropagation(); // Prevent modal from opening
-                setIsEditing(false);
-              }}
+              onClick={(e) => { e.stopPropagation(); setIsEditing(false); }}
               className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
             >
               Cancel
             </button>
             <button
-              onClick={handleSave} // Save changes
+              onClick={handleSave}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
             >
               Save
@@ -130,41 +190,33 @@ const JobApplication: React.FC<JobApplicationProps> = ({
         </div>
       )}
 
-      <a
+     <a
         href={url}
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-500 hover:underline mt-4 block"
-        onClick={(e) => e.stopPropagation()} // Prevent modal from opening
+        onClick={(e) => e.stopPropagation()}
       >
         View Application
       </a>
 
       {isHovered && !isEditing && (
-  <div className="absolute top-4 right-4 flex space-x-2">
-    {/* Edit Button */}
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        setIsEditing(true);
-      }}
-      className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded shadow"
-    >
-      Edit
-    </button>
-
-    {/* Delete Button (Trash Icon) */}
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        onDelete(); // Call delete function
-      }}
-      className="px-3 py-1 text-sm text-red-600 hover:text-white hover:bg-red-600 rounded shadow"
-    >
-      🗑️
-    </button>
-  </div>
-)}
-</div>
-  )}
+        <div className="absolute top-4 right-4 flex space-x-2">
+          <button
+            onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
+            className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded shadow"
+          >
+            Edit
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            className="px-3 py-1 text-sm text-red-600 hover:text-white hover:bg-red-600 rounded shadow"
+          >
+            🗑️
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 export default JobApplication;

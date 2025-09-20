@@ -120,13 +120,13 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-3 sm:space-x-4">
             <button
               onClick={() => router.push("/login")}
-              className="px-4 py-2 text-sm font-serif text-gray-900 border border-gray-300 rounded-full bg-white hover:bg-gray-300 transition-all duration-300 hover:border-purple-400 hover:shadow-sm"
+              className="px-4 py-2 text-sm font-serif font-medium text-gray-900 border border-gray-300 rounded-full bg-white hover:bg-gray-300 transition-all duration-300 hover:border-purple-400 hover:shadow-sm"
             >
               Log in
             </button>
             <button
               onClick={() => router.push("/register")}
-              className="px-4 py-2 text-sm font-serif text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-full hover:bg-gradient-to-l transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20"
+              className="px-4 py-2 text-sm font-serif font-medium text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-full hover:bg-gradient-to-l transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20"
             >
               Sign up
             </button>

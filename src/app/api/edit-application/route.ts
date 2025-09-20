@@ -4,14 +4,29 @@ import { ReturnValue } from "@aws-sdk/client-dynamodb";
 import { dynamoDb } from "@/app/lib/dynamoClient";
 
 export async function POST(request: Request) {
-  const { user_id, newStatus, application_id } = await request.json();
+  const { user_id, newStatus, application_id, interview_at } = await request.json();
   console.log(`application id is: ${application_id}`);
 
-  if (!user_id) {
-    return NextResponse.json(
-      { message: "No user ID provided" },
-      { status: 400 }
-    );
+  if (!user_id || !application_id || !newStatus) {
+    return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+  }
+
+  // If interview is being scheduled, require a datetime
+  if (newStatus === "Interview Scheduled" && !interview_at) {
+    return NextResponse.json({ message: "interview_at is required when scheduling" }, { status: 400 });
+  }
+
+  
+
+  // Optional: validate interview_at looks like a real date
+  if (interview_at) {
+    const d = new Date(interview_at);
+    if (isNaN(d.getTime())) {
+      return NextResponse.json(
+        { message: "interview_at must be a valid datetime (ISO string recommended)" },
+        { status: 400 }
+      );
+    }
   }
 
   const params = {
@@ -30,19 +45,32 @@ export async function POST(request: Request) {
 
     if (response.Items && response.Items.length > 0) {
       console.log("Application found, updating...");
+
+      // Build dynamic update (set status always; set/remove interview_at)
+      let UpdateExpression = "SET #status = :status";
+      const ExpressionAttributeNames: Record<string, string> = { "#status": "status" };
+      const ExpressionAttributeValues: Record<string, any> = { ":status": newStatus };
+      
+      // If scheduling, set interview_at; otherwise remove it
+      let removePart = "";
+      if (newStatus === "Interview Scheduled" && interview_at) {
+        UpdateExpression += ", interview_at = :iat";
+        ExpressionAttributeValues[":iat"] = interview_at; // ISO string
+      } else {
+        // If moving away from Interview Scheduled, remove interview_at (safe even if absent)
+        removePart = " REMOVE interview_at";
+      }
+
+      
       const update_params = {
         TableName: "Applications",
         Key: {
           user_id: user_id, // Partition key
           application_id: application_id, // Sort key
         },
-        UpdateExpression: "SET #status = :status",
-        ExpressionAttributeNames: {
-          "#status": "status",
-        },
-        ExpressionAttributeValues: {
-          ":status": newStatus,
-        },
+        UpdateExpression: UpdateExpression + removePart,
+        ExpressionAttributeNames,
+        ExpressionAttributeValues,
         ReturnValues: ReturnValue.ALL_NEW,
       };
 

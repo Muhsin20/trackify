@@ -7,13 +7,18 @@ import JobApplication from "../components/JobApplication";
 import { ToastContainer, toast } from "react-toastify";
 import { useRouter, useSearchParams } from "next/navigation";
 interface Application {
-  application_id: number;
+  application_id: string; //should change to number or no?
   title: string;
   company: string;
   url: string;
   description: string;
   status: string;
+  interview_at?: string;
+  created_at?: string;          // 👈 new
+
 }
+
+
 
 export default function JobApplicationPage() {
   return (
@@ -25,7 +30,9 @@ export default function JobApplicationPage() {
   );
 }
 const ApplicationComponent = () => {
+  const [interviewAtLocal, setInterviewAtLocal] = useState("");
   const router = useRouter();
+  const toISO = (local: string) => local ? new Date(local).toISOString() : undefined;
   const searchParams = useSearchParams();
   useEffect(() => {
     async function authUser() {
@@ -102,7 +109,7 @@ const ApplicationComponent = () => {
   }, []);
 
   const [applications, setApplications] = useState<Application[]>([]);
-  const [userID, setUserID] = useState();
+  const [userID, setUserID] = useState<string>(""); //was just useState() befr
   const [jobLength, setJobLength] = useState(1);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -127,12 +134,14 @@ const ApplicationComponent = () => {
   const handleOpenModalForm = () => setShowModalForm(true); // Open Add Application Modal
   const handleCloseModalForm = () => {
     setShowModalForm(false); // Close Add Application Modal
+    setInterviewAtLocal("");                      // ✅ reset
+
     setNewApplication({
       title: "",
       company: "",
       url: "",
       description: "",
-      status: "",
+      status: "Applied",
     });
   };
 
@@ -158,7 +167,7 @@ const ApplicationComponent = () => {
     setViewApplication(null); // Close View Application Modal
   };
 
-  let tempIdCounter = 0;
+  //let tempIdCounter = 0; You don’t need tempIdCounter anymore since you’re not using decrementing numbers for temp IDs.
   const handleSaveApplication = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -190,20 +199,29 @@ const ApplicationComponent = () => {
       return; // Prevent the request if any field is empty
     }
 
+      const payload: any = {
+    user_id: userID,
+    title: newApplication.title.trim(),
+    company: newApplication.company.trim(),
+    url: newApplication.url.trim(),
+    description: newApplication.description.trim(),
+    status: newApplication.status,
+
+    
+
+  };
+
+  if (newApplication.status === "Interview Scheduled" && interviewAtLocal) {
+    payload.interview_at = toISO(interviewAtLocal); // ISO string
+  }
+
     const response = await fetch("/api/add-application", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        user_id: userID,
-        title: newApplication.title.trim(),
-        company: newApplication.company.trim(),
-        url: newApplication.url.trim(),
-        description: newApplication.description.trim(),
-        status: newApplication.status,
-      }),
+      body: JSON.stringify(payload),
     });
 
     const data = await response.json();
@@ -214,63 +232,68 @@ const ApplicationComponent = () => {
       toast.success("Job Added!", {
         position: "top-center",
         autoClose: 5000,
+
       });
-      const tempId = --tempIdCounter;
-      const applicationWithId: Application = {
-        ...newApplication,
-        application_id: tempId,
-      };
-      setApplications((prevApplications) => [
-        ...prevApplications,
-        applicationWithId,
-      ]);
-    } else {
-      alert(data.message);
     }
+    // PREPEND the real saved item so it shows at the top immediately
+  const saved = data.item as Application;
+  setApplications(prev => [saved, ...prev]);
+
+    
 
     handleCloseModalForm(); // Close Add Application Modal
   };
 
-  const handleEditStatus = async (id: number, newStatus: string) => {
-    try {
-      const response = await fetch("/api/edit-application", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: userID,
-          newStatus: newStatus,
-          application_id: id,
-        }),
-      });
+  type EditPayload = { newStatus: string; interviewAtISO?: string };
 
-      if (!response.ok) {
-        throw new Error("Failed to edit application");
-      }
-
-      const data = await response.json();
-
-      if (data.statusCode === 200) {
-        toast.success("Job Edited!", {
-          position: "top-center",
-          autoClose: 5000,
-        });
-        setApplications((prev) =>
-          prev.map((app) =>
-            app.application_id === id ? { ...app, status: newStatus } : app
-          )
-        );
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      toast.error("Failed to edit job application. Please try again.");
+const handleEditStatus = async (
+  id: string,
+  { newStatus, interviewAtISO }: EditPayload
+) => {
+  try {
+    const payload: Record<string, unknown> = {
+      user_id: userID,
+      newStatus,
+      application_id: id,
+    };
+    if (newStatus === "Interview Scheduled" && interviewAtISO) {
+      payload.interview_at = interviewAtISO; // <-- use the value from the card
     }
-  };
 
-  const handleDeleteApplication = async (id: number) => {
+    const response = await fetch("/api/edit-application", {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) throw new Error("Failed to edit application");
+
+    const data = await response.json();
+    if (data.statusCode === 200) {
+      toast.success("Job Edited!", { position: "top-center", autoClose: 5000 });
+
+      // Update the existing item (not append)
+      setApplications((prev) =>
+        prev.map((app) =>
+          app.application_id === id
+            ? {
+                ...app,
+                status: newStatus,
+                interview_at:
+                  newStatus === "Interview Scheduled" ? interviewAtISO : undefined,
+              }
+            : app
+        )
+      );
+    } else {
+      alert(data.message);
+    }
+  } catch (e) {
+    toast.error("Failed to edit job application. Please try again.");
+  }
+};
+
+  const handleDeleteApplication = async (id: string) => {
     try {
       //console.log(`user id is ${userID} and applicationid is ${id}`);
       const response = await fetch("/api/delete-application", {
@@ -359,9 +382,8 @@ const ApplicationComponent = () => {
                     url={app.url}
                     description={app.description}
                     status={app.status}
-                    onEditStatus={(newStatus) =>
-                      handleEditStatus(app.application_id, newStatus)
-                    } // Pass edit callback
+                    interviewAtISO={app.interview_at}          // ✅ add this
+                    onEditStatus={(payload) => handleEditStatus(app.application_id, payload)}// Pass edit callback
                     onViewDetails={() => handleOpenViewModal(app)} // Pass view callback
                     onDelete={() => handleDeleteApplication(app.application_id)} // ADD THIS PROP
 
@@ -527,24 +549,41 @@ const ApplicationComponent = () => {
                         Status
                       </label>
                       <select
-                        name="status"
-                        value={newApplication.status}
-                        onChange={(e) =>
-                          setNewApplication((prev) => ({
-                            ...prev,
-                            status: e.target.value,
-                          }))
-                        }
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="Applied">Applied</option>
-                        <option value="Interview Scheduled">
-                          Interview Scheduled
-                        </option>
-                        <option value="Pending">Pending</option>
-                        <option value="Offer Received">Offer Received</option>
-                        <option value="Rejected">Rejected</option>
-                      </select>
+                      name="status"
+                      value={newApplication.status || "Applied"}  // <— fallback
+                      onChange={(e) => {
+                        const s = e.target.value;
+                        setNewApplication((prev) => ({ ...prev, status: s }));
+                        if (s !== "Interview Scheduled") setInterviewAtLocal(""); // clear datetime when not needed
+                      }}
+                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="Applied">Applied</option>
+                      <option value="Interview Scheduled">Interview Scheduled</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Offer Received">Offer Received</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+
+                      {newApplication.status === "Interview Scheduled" && (
+                      <div className="mt-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Interview date & time
+                        </label>
+                        <input
+                          type="datetime-local"
+                          value={interviewAtLocal}
+                          onChange={(e) => setInterviewAtLocal(e.target.value)}
+                          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          This will be saved with the status.
+                        </p>
+                      </div>
+                    )}
+
+
+
                     </div>
                     <div className="flex justify-end space-x-4 mt-6">
                       <button

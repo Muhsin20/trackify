@@ -1,10 +1,13 @@
 "use client";
 
 import { IconType } from "react-icons";
-import { FiBriefcase, FiHome, FiLogOut, FiUser, FiGlobe } from "react-icons/fi";
+
+import { FiBriefcase, FiCalendar ,FiHome, FiLogOut, FiUser, FiGlobe } from "react-icons/fi";
 import { FaUserTie } from "react-icons/fa";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+
 export const RouteSelect = () => {
   const router = useRouter(); // Next.js router for navigation
   const pathname = usePathname(); // To get the current path
@@ -12,6 +15,7 @@ export const RouteSelect = () => {
   const routes = [
     { title: "Dashboard", icon: FiHome, path: "/dashboard" },
     { title: "My Applications", icon: FiBriefcase, path: "/applications" },
+    { title: "Calendar", icon: FiCalendar, path: "/calendar" }, // ⬅️ add this
     { title: "Job Listings", icon: FiGlobe , path: "/remote-jobs" },
     { title: "Interview Prep", icon: FaUserTie , path: "/interview-prep" },
     { title: "Profile", icon: FiUser, path: "/profile" },
