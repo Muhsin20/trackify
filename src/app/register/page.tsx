@@ -63,7 +63,7 @@ export default function Register() {
       <Navbar />
 
       {/* Background layer with shapes */}
-      <div className="relative min-h-screen bg-gradient-to-br from-fuchsia-900 via-purple-900 to-indigo-800">
+      <div className="relative min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800">
         <LoginBackground />
 
         {/* content */}

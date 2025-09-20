@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import redisClient from "@/app/lib/redisClient";
-import { QueryCommand, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand, QueryCommandOutput, NativeAttributeValue } from "@aws-sdk/lib-dynamodb";
 import { Select } from "@aws-sdk/client-dynamodb";
 import { NextResponse, NextRequest } from "next/server";
 import { dynamoDb } from "@/app/lib/dynamoClient";
@@ -57,36 +57,92 @@ export async function GET(request: NextRequest) {
     Limit: limit,
   };
 
-  // Loop to reach the correct page
-  while (pageIndex < currPage) {
-    const command: QueryCommand = new QueryCommand({
-      ...params,
-      ExclusiveStartKey: lastEvaluatedKey || undefined,
-    });
 
-    const response: QueryCommandOutput = await dynamoDb.send(command);
+// --- fetch ALL items for the user (paginate the Query), then sort & slice ---
+const collectParams = {
+  TableName: "Applications",
+  KeyConditionExpression: "user_id = :userId",
+  ExpressionAttributeValues: {
+    ":userId": userId,
+  },
+  // (optional) ProjectionExpression: "application_id, title, company, url, description, status, interview_at, created_at",
+};
 
-    if (!response.LastEvaluatedKey && pageIndex < Number(currPage)) {
-      break; // Break out of loop but don’t return empty data unless needed
-    }
+let allItems: Record<string, unknown>[] = [];
+let lek: Record<string, NativeAttributeValue> | undefined = undefined;
 
-    lastEvaluatedKey = response.LastEvaluatedKey;
-    pageIndex++;
-  }
-
-  // Fetch the data for the requested page
-  const finalCommand = new QueryCommand({
-    ...params,
-    ExclusiveStartKey: lastEvaluatedKey || undefined,
-  });
-  const finalResponse = await dynamoDb.send(finalCommand);
-
-  return new Response(
-    JSON.stringify({
-      message: "Applications Returned",
-      applications: finalResponse.Items || [],
-      applications_length: app_length,
-    }),
-    { status: 200 }
+do {
+  const resp: QueryCommandOutput  = await dynamoDb.send(
+    new QueryCommand({
+      ...collectParams,
+      ExclusiveStartKey: lek,
+    })
   );
+  allItems = allItems.concat(resp.Items ?? []);
+  lek = resp.LastEvaluatedKey;
+} while (lek);
+
+// sort DESC by created_at (fallback to 0 when missing)
+allItems.sort(
+  (a, b) => Number(b.created_at_epoch ?? 0) - Number(a.created_at_epoch ?? 0)
+);
+
+// paginate AFTER sorting
+const pageSize = 10;
+const start = (currPage - 1) * pageSize;
+const paged = allItems.slice(start, start + pageSize);
+
+// total length (you already computed app_length; you can also use allItems.length)
+return NextResponse.json(
+  {
+    message: "Applications Returned",
+    applications: paged,
+    applications_length: app_length ?? allItems.length,
+  },
+  { status: 200 }
+);
+
+
+  // // Loop to reach the correct page
+  // while (pageIndex < currPage) {
+  //   const command: QueryCommand = new QueryCommand({
+  //     ...params,
+  //     ExclusiveStartKey: lastEvaluatedKey || undefined,
+  //   });
+
+  //   const response: QueryCommandOutput = await dynamoDb.send(command);
+
+  //   if (!response.LastEvaluatedKey && pageIndex < Number(currPage)) {
+  //     break; // Break out of loop but don’t return empty data unless needed
+  //   }
+
+  //   lastEvaluatedKey = response.LastEvaluatedKey;
+  //   pageIndex++;
+  // }
+
+
+  
+  // // Fetch the data for the requested page
+  // const finalCommand = new QueryCommand({
+  //   ...params,
+  //   ExclusiveStartKey: lastEvaluatedKey || undefined,
+  // });
+  // const finalResponse = await dynamoDb.send(finalCommand);
+
+  
+
+  // return new Response(
+  //   JSON.stringify({
+  //     message: "Applications Returned",
+  //     applications: finalResponse.Items || [],
+  //     applications_length: app_length,
+  //   }),
+  //   { status: 200 }
+
+    
+  // );
+
+  
+
+  
 }
