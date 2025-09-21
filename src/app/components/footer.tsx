@@ -1,9 +1,14 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { FaTwitter, FaLinkedin, FaGithub, FaEnvelope, FaArrowRight } from "react-icons/fa";
+import {
+  FaTwitter,
+  FaLinkedin,
+  FaGithub,
+  FaEnvelope,
+  FaArrowRight,
+} from "react-icons/fa";
 
-// Define the props interface
 interface FooterProps {
   companyName?: string;
   tagline?: string;
@@ -13,55 +18,81 @@ const Footer: React.FC<FooterProps> = ({
   companyName = "Trackify",
   tagline = "Crafted with ❤️ to empower your professional journey.",
 }) => {
+  const year = new Date().getFullYear();
+
+  const quickLinks = [
+    { label: "About Us", href: "/about" },
+    { label: "Contact", href: "/Contact" },
+  ];
+
+  const socials = [
+    { icon: FaLinkedin, link: "https://linkedin.com", label: "LinkedIn" },
+    { icon: FaEnvelope, link: "mailto:support@trackify.ink", label: "Email" },
+  ];
+
   return (
-    <footer className="bg-black text-white py-12 md:py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="relative overflow-hidden bg-black text-white">
+      {/* Top animated accent bar */}
+      <div className="h-1 w-full bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 animate-[pulse_6s_ease-in-out_infinite]" />
+
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 md:py-10 lg:px-8">
+        {/* Header blurb */}
+        <div className="mb-6 flex flex-col items-center text-center">
+          <h2 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-purple-300">
+            {companyName}
+          </h2>
+          <p className="mt-1 text-xs text-gray-300">{tagline}</p>
+        </div>
+
+        {/* Divider */}
+        <div className="relative mx-auto mb-6 h-px w-full">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/70 to-transparent" />
+        </div>
+
         {/* Footer Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-          {/* Brand Section */}
-          <div className="space-y-4">
-            <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-              {companyName}
-            </h1>
-            <p className="text-sm text-gray-300">{tagline}</p>
-            <div className="flex space-x-4">
-              {[
-                { icon: FaTwitter, link: "https://twitter.com" },
-                { icon: FaLinkedin, link: "https://linkedin.com" },
-                { icon: FaGithub, link: "https://github.com" },
-                { icon: FaEnvelope, link: "mailto:support@trackify.com" },
-              ].map((social, index) => (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-4 text-sm">
+          {/* Brand + Socials */}
+          <div className="space-y-3">
+            <div className="inline-flex items-center space-x-2">
+              <span className="text-xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                {companyName}
+              </span>
+              <span className="rounded-full border border-purple-400/30 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-purple-200/90">
+                Beta
+              </span>
+            </div>
+            <p className="text-xs text-gray-300">
+              Your personal job tracker—fast, focused, and friendly.
+            </p>
+            <div className="flex items-center space-x-3">
+              {socials.map(({ icon: Icon, link, label }, i) => (
                 <a
-                  key={index}
-                  href={social.link}
+                  key={i}
+                  href={link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-purple-400 transition-all duration-300 transform hover:scale-110"
+                  aria-label={label}
+                  className="text-gray-400 transition-all duration-300 hover:text-purple-400 hover:scale-110"
                 >
-                  <social.icon className="w-6 h-6" />
+                  <Icon className="h-5 w-5" />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Quick Links Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-base font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
               Quick Links
             </h3>
-            <ul className="space-y-3">
-              {[
-                { label: "About Us", href: "/about" },
-                { label: "Features", href: "/features" },
-                { label: "Pricing", href: "/pricing" },
-                { label: "Contact", href: "/Contact" },
-              ].map((link, index) => (
+            <ul className="mt-2 space-y-2">
+              {quickLinks.map((link, index) => (
                 <li key={index}>
                   <Link
                     href={link.href}
-                    className="flex items-center text-sm text-gray-300 hover:text-purple-400 transition-all duration-300 hover:translate-x-2"
+                    className="group flex items-center text-xs text-gray-300 transition-all hover:text-purple-400"
                   >
-                    <FaArrowRight className="w-3 h-3 mr-2" />
+                    <FaArrowRight className="mr-2 h-3 w-3 group-hover:translate-x-1 transition-transform" />
                     {link.label}
                   </Link>
                 </li>
@@ -69,57 +100,53 @@ const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Newsletter Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-              Newsletter
+          {/* Motto */}
+          <div>
+            <h3 className="text-base font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+              Our Motto
             </h3>
-            <p className="text-sm text-gray-300">
-              Subscribe to get the latest updates and insights.
+            <p className="mt-2 text-xs italic text-gray-300">
+              “Helping you land your dream job, one application at a time.”
             </p>
-            <form className="flex flex-col space-y-3">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="p-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-md hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105"
-              >
-                Subscribe
-              </button>
-            </form>
           </div>
 
-          {/* Contact Info Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+          {/* Contact */}
+          <div>
+            <h3 className="text-base font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
               Contact Us
             </h3>
-            <ul className="space-y-3 text-sm text-gray-300">
-              <li>Email: support@trackify.com</li>
-              <li>Phone: +1 (123) 456-7890</li>
-              <li>Address: 123 Career Lane, Suite 456, Success City</li>
+            <ul className="mt-2 space-y-1 text-xs text-gray-300">
+              <li>
+                Email:{" "}
+                <a
+                  href="mailto:support@trackify.com"
+                  className="text-purple-300 underline underline-offset-2 hover:text-pink-300"
+                >
+                  support@trackify.ink
+                </a>
+              </li>
+              <li>Address: Chicago, IL</li>
             </ul>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-gray-500 my-8"></div>
+        {/* Bottom divider */}
+        <div className="relative mx-auto my-6 h-px w-full">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-500/60 to-transparent" />
+        </div>
 
-        {/* Copyright Section */}
-        <div className="mt-8 text-center">
-          <p className="text-xs sm:text-sm text-gray-400">
-            © {new Date().getFullYear()}{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 font-bold">
-              {companyName}
-            </span>
-            . All rights reserved.
-          </p>
-          <p className="mt-1 text-xs sm:text-sm text-gray-400">{tagline}</p>
+        {/* Copyright */}
+        <div className="text-center text-[11px] text-gray-400">
+          © {year}{" "}
+          <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+            {companyName}
+          </span>
+          . All rights reserved. {tagline}
         </div>
       </div>
+
+      {/* Bottom gradient bar */}
+      <div className="h-1 w-full bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 animate-[pulse_8s_ease-in-out_infinite]" />
     </footer>
   );
 };
